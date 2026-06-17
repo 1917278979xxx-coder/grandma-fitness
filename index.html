@@ -662,38 +662,6 @@ html, body {
           <input class="form-input" type="password" id="newPassword" placeholder="留空则不修改" maxlength="6" inputmode="numeric" pattern="[0-9]*">
         </div>
       </div>
-
-      <!-- Cloud Sync -->
-      <div class="admin-section" id="syncSection">
-        <h3 style="cursor:pointer;display:flex;align-items:center;gap:8px;user-select:none" id="syncSectionHeader">
-          ☁️ 云端同步
-          <span style="font-size:0.8rem;color:var(--text-muted);font-weight:400" id="syncExpandHint">（点击展开）</span>
-        </h3>
-
-        <div id="syncBody" style="display:none">
-
-          <!-- Sync code -->
-          <div class="form-group">
-            <label for="syncCodeInput">🔑 同步码</label>
-            <input class="form-input" type="text" id="syncCodeInput"
-                   placeholder="输入同步码（如：grandma2024）"
-                   style="font-family:monospace;letter-spacing:2px" autocomplete="off">
-            <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;line-height:1.5">
-              使用相同同步码的设备之间可以同步视频列表。<br>
-              第一次使用？随意输入一个别人没用过的同步码，上传即可创建。
-            </p>
-          </div>
-
-          <!-- Push / Pull buttons -->
-          <div style="display:flex;gap:12px;margin-bottom:14px">
-            <button class="btn btn-primary" id="syncPushBtn" style="flex:1">☁️⬆ 上传到云端</button>
-            <button class="btn btn-secondary" id="syncPullBtn" style="flex:1">☁️⬇ 从云端下载</button>
-          </div>
-
-          <!-- Status -->
-          <div id="syncStatus" style="font-size:var(--font-sm);color:var(--text-secondary);text-align:center;min-height:24px;line-height:1.6"></div>
-        </div>
-      </div>
     </div>
 
     <div class="admin-bottom">
@@ -797,38 +765,13 @@ html, body {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const data = JSON.parse(raw);
-
-        // Version-based migration: v1 -> v2 (add sync fields)
-        if (!data.version || data.version < 2) {
-          data.version = 2;
-          data.syncCode = data.syncCode || null;
-          data.lastSyncAt = data.lastSyncAt || null;
-          data.lastSyncDirection = data.lastSyncDirection || null;
-          // Migrate old firebaseConfig to cloudConfig
-          if (data.firebaseConfig && !data.cloudConfig) {
-            data.cloudConfig = null; // drop old invalid config
-          }
-          data.cloudConfig = data.cloudConfig || null;
-          // Save migrated data back
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        }
-
         return {
           videos: data.videos || [],
-          adminPassword: data.adminPassword || null,
-          version: data.version || 2,
-          cloudConfig: data.cloudConfig || null,
-          syncCode: data.syncCode || null,
-          lastSyncAt: data.lastSyncAt || null,
-          lastSyncDirection: data.lastSyncDirection || null
+          adminPassword: data.adminPassword || null
         };
       }
     } catch(e) { /* corrupted data */ }
-    return {
-      videos: [], adminPassword: null, version: 2,
-      cloudConfig: null, syncCode: null,
-      lastSyncAt: null, lastSyncDirection: null
-    };
+    return { videos: [], adminPassword: null };
   }
 
   function saveMeta(meta) {
@@ -837,185 +780,6 @@ html, body {
 
   function generateId() {
     return 'v_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
-  }
-
-  // ============================
-  //  Cloud Sync (CloudBase shared backend)
-  // ============================
-  // CloudBase credentials — hardcoded so users don't need to configure anything.
-  // ⚠️ This is an admin-level token. If you're reading this, please don't abuse it.
-  const CB_ENV_ID = 'grandma-fitness-d5f2nq1vbb14ac9a';
-  // Token stored in parts (se p aration to avoid stupid scanners):
-  const CB_TK1 = 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjlkMWRjMzFlLWI0ZDAtNDQ4Yi1hNzZmLWIwY2M2M2Q4MTQ5OCJ9';
-  const CB_TK2 = 'eyJhdWQiOiJncmFuZG1hLWZpdG5lc3MtZDVmMm5xMXZiYjE0YWM5YSIsImV4cCI6MjUzNDAyMzAwNzk5LCJpYXQiOjE3ODE2OTUzMjQsImF0X2hhc2giOiJtZXFZa0l6Q1FzQ1pSdDlOQ0YtTVJRIiwicHJvamVjdF9pZCI6ImdyYW5kbWEtZml0bmVzcy1kNWYybnExdmJiMTRhYzlhIiwibWV0YSI6eyJwbGF0Zm9ybSI6IkFwaUtleSJ9LCJhZG1pbmlzdHJhdG9yX2lkIjoiMjA2NzIwMjMxNDg2OTUyNjUzMCIsInVzZXJfdHlwZSI6IiIsImNsaWVudF90eXBlIjoiY2xpZW50X3NlcnZlciIsImlzX3N5c3RlbV9hZG1pbiI6dHJ1ZX0';
-  const CB_TK3 = 'RJFI28AsRfQg028hQe-v2MXCOlX6S3cRO4octVOVXwrjQ7QfYFiIc2sVk427W-tOcqk7paWKOl38jo5LdxRv3miUgy7Ts00wwzJSkcVTfGTqmVztpj5gFjQOpdz597sZaMkQ_ntfufay1h_YFAueMRXwwFllWdsylCnJork3GIAykRuSmXyHe-9flrIKu--U_ih3ERVogHWADO--qe-IvOiyklPa5NdHR8VIvx_T9ofP2rMRkgQZ34mAPpB7E8cj-TIqbuE1pE_sB6VzU9rbKAFA_u_NA7Li6kJiRoTTmjGTiJT36HPYybmUcO3_QzI9udTBJVUjK6bN7rMgLzLisQ';
-  const CB_ACCESS_TOKEN = CB_TK1 + '.' + CB_TK2 + '.' + CB_TK3;
-
-  function getCloudApiBase() {
-    const encodedColl = encodeURIComponent('grandma_fitness_sync');
-    return `https://${CB_ENV_ID}.api.tcloudbasegateway.com/v1/database/instances/(default)/databases/(default)/collections/${encodedColl}/documents`;
-  }
-
-  function getDeviceName() {
-    try {
-      const ua = navigator.userAgent;
-      if (/iPhone/i.test(ua)) return 'iPhone';
-      if (/iPad/i.test(ua)) return 'iPad';
-      if (/Android/i.test(ua)) {
-        const m = ua.match(/Android\s[\d.]+;\s([^;)]+)/);
-        return m ? m[1].trim() : 'Android 设备';
-      }
-      if (/Windows/i.test(ua)) return 'Windows 电脑';
-      if (/Mac/i.test(ua)) return 'Mac 电脑';
-      if (/Linux/i.test(ua)) return 'Linux 设备';
-      return '未知设备';
-    } catch(e) {
-      return '未知设备';
-    }
-  }
-
-  function getSyncErrorMessage(error) {
-    const msg = error.message || String(error);
-    if (msg.includes('Failed to fetch') || msg.includes('NetworkError') ||
-        msg.includes('ERR_NAME_NOT_RESOLVED') || msg.includes('ERR_INTERNET_DISCONNECTED'))
-      return '网络连接失败，请检查网络后重试';
-    if (msg.includes('404') || msg.includes('not found'))
-      return '云端数据不存在，请检查同步码是否正确';
-    if (msg.includes('429') || msg.includes('limit'))
-      return '请求太频繁，请稍后再试';
-    if (msg.includes('请先') || msg.includes('请设置') || msg.includes('请填写'))
-      return msg;
-    return `同步失败：${msg}`;
-  }
-
-  function validateSyncCode(code) {
-    if (!code || !code.trim()) return '请先设置同步码';
-    if (code.includes('/')) return '同步码不能包含 "/" 字符';
-    if (code.length > 100) return '同步码太长（最多100个字符）';
-    return null; // valid
-  }
-
-  async function pushToCloud() {
-    if (!navigator.onLine) throw new Error('当前处于离线状态，无法上传');
-
-    const syncCode = (meta.syncCode || syncCodeInput.value.trim()).trim();
-    const codeErr = validateSyncCode(syncCode);
-    if (codeErr) throw new Error(codeErr);
-
-    showToast('☁️ 正在上传...', 3000);
-
-    const videoData = meta.videos.map(v => ({
-      id: v.id,
-      title: v.title,
-      type: v.type,
-      source: v.source || null,
-      localId: v.localId || null,
-      fileName: v.fileName || null,
-      fileSize: v.fileSize || null,
-      order: v.order
-    }));
-
-    const resp = await fetch(`${getCloudApiBase()}/${encodeURIComponent(syncCode)}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${CB_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        videos: videoData,
-        deviceName: getDeviceName(),
-        updatedAt: new Date().toISOString()
-      })
-    });
-
-    if (!resp.ok) {
-      const text = await resp.text().catch(() => '');
-      throw new Error(`请求失败 (${resp.status})${text ? ': ' + text.slice(0, 100) : ''}`);
-    }
-
-    meta.syncCode = syncCode;
-    meta.lastSyncAt = Date.now();
-    meta.lastSyncDirection = 'push';
-    saveMeta(meta);
-
-    syncCodeInput.value = syncCode;
-    updateSyncStatus();
-  }
-
-  async function pullFromCloud() {
-    if (!navigator.onLine) throw new Error('当前处于离线状态，无法下载');
-
-    const syncCode = (meta.syncCode || syncCodeInput.value.trim()).trim();
-    const codeErr = validateSyncCode(syncCode);
-    if (codeErr) throw new Error(codeErr);
-
-    showToast('☁️ 正在下载...', 3000);
-
-    const resp = await fetch(`${getCloudApiBase()}/${encodeURIComponent(syncCode)}`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${CB_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (resp.status === 404) {
-      throw new Error('云端没有找到数据，请先上传或检查同步码是否正确。第一次使用请先「上传到云端」。');
-    }
-    if (!resp.ok) {
-      const text = await resp.text().catch(() => '');
-      throw new Error(`请求失败 (${resp.status})${text ? ': ' + text.slice(0, 100) : ''}`);
-    }
-
-    const cloudData = await resp.json();
-    const cloudVideos = cloudData.videos || (Array.isArray(cloudData) ? cloudData : []);
-
-    const localCount = meta.videos.length;
-    const cloudCount = cloudVideos.length;
-    if (!confirm(
-      `即将从云端同步视频列表：\n\n` +
-      `本地现有 ${localCount} 个视频\n` +
-      `云端有 ${cloudCount} 个视频\n\n` +
-      `⚠️ 本地的视频列表将被云端数据覆盖！\n` +
-      `⚠️ 本地视频文件不会被同步，\n` +
-      `   在新设备上需要重新上传。\n\n` +
-      `确认继续？`
-    )) return;
-
-    meta.videos = cloudVideos;
-    meta.syncCode = syncCode;
-    meta.lastSyncAt = Date.now();
-    meta.lastSyncDirection = 'pull';
-    saveMeta(meta);
-
-    syncCodeInput.value = syncCode;
-    renderAdminList();
-    updateSyncStatus();
-
-    const orphanedLocals = cloudVideos.filter(v => v.type === 'local');
-    if (orphanedLocals.length > 0) {
-      showToast(`⚠️ ${orphanedLocals.length} 个本地视频需要在新设备上重新上传文件`, 5000);
-    }
-  }
-
-  function updateSyncStatus() {
-    if (meta.lastSyncAt) {
-      const date = new Date(meta.lastSyncAt);
-      const timeStr = date.toLocaleString('zh-CN', {
-        month: 'numeric', day: 'numeric',
-        hour: '2-digit', minute: '2-digit'
-      });
-      const dir = meta.lastSyncDirection === 'push'
-        ? '⬆ 上次上传' : '⬇ 上次下载';
-      syncStatus.textContent = `${dir}：${timeStr}`;
-    } else {
-      syncStatus.textContent = '尚未同步';
-    }
-  }
-
-  function populateSyncConfigFields() {
-    syncCodeInput.value = meta.syncCode || '';
-    updateSyncStatus();
   }
 
   // ============================
@@ -1061,15 +825,6 @@ html, body {
   const newPasswordInput = $('#newPassword');
   const adminSaveBtn = $('#adminSaveBtn');
   const adminCancelBtn = $('#adminCancelBtn');
-
-  // Sync section
-  const syncSectionHeader = $('#syncSectionHeader');
-  const syncBody = $('#syncBody');
-  const syncExpandHint = $('#syncExpandHint');
-  const syncCodeInput = $('#syncCodeInput');
-  const syncPushBtn = $('#syncPushBtn');
-  const syncPullBtn = $('#syncPullBtn');
-  const syncStatus = $('#syncStatus');
 
   const passwordDialog = $('#passwordDialog');
   const dialogTitle = $('#dialogTitle');
@@ -1789,68 +1544,6 @@ html, body {
   adminCancelBtn.addEventListener('click', () => {
     newPasswordInput.value = '';
     switchToElderly(false);
-  });
-
-  // ============================
-  //  Sync UI Event Handlers
-  // ============================
-  // Toggle sync section
-  syncSectionHeader.addEventListener('click', () => {
-    const isHidden = syncBody.style.display === 'none';
-    if (isHidden) {
-      syncBody.style.display = 'block';
-      syncExpandHint.textContent = '（点击收起）';
-      populateSyncConfigFields();
-    } else {
-      syncBody.style.display = 'none';
-      syncExpandHint.textContent = '（点击展开）';
-    }
-  });
-
-  // Save sync code on input
-  syncCodeInput.addEventListener('change', () => {
-    const code = syncCodeInput.value.trim();
-    if (!code) return;
-    meta.syncCode = code;
-    saveMeta(meta);
-    updateSyncStatus();
-  });
-
-  // Push to cloud
-  syncPushBtn.addEventListener('click', async () => {
-    syncPushBtn.disabled = true;
-    syncPullBtn.disabled = true;
-    try {
-      const localCount = meta.videos.length;
-      if (localCount === 0) {
-        const ok = confirm('本地没有视频，上传后云端数据将被清空。\n\n确定继续？');
-        if (!ok) return;
-      }
-      await pushToCloud();
-      showToast(`✅ 已上传 ${meta.videos.length} 个视频到云端！`);
-    } catch(err) {
-      console.error('Push failed:', err);
-      showToast(`❌ ${getSyncErrorMessage(err)}`, 4000);
-    } finally {
-      syncPushBtn.disabled = false;
-      syncPullBtn.disabled = false;
-    }
-  });
-
-  // Pull from cloud
-  syncPullBtn.addEventListener('click', async () => {
-    syncPushBtn.disabled = true;
-    syncPullBtn.disabled = true;
-    try {
-      await pullFromCloud();
-      showToast(`✅ 已从云端同步 ${meta.videos.length} 个视频！`);
-    } catch(err) {
-      console.error('Pull failed:', err);
-      showToast(`❌ ${getSyncErrorMessage(err)}`, 4000);
-    } finally {
-      syncPushBtn.disabled = false;
-      syncPullBtn.disabled = false;
-    }
   });
 
   // ============================
