@@ -1015,19 +1015,37 @@ html, body {
   }
 
   function showExternalLinkView(url) {
+    const isWeChat = isWeChatVideoUrl(url);
     const platformName = getPlatformName(url);
     const domain = new URL(url).hostname.replace('www.', '');
-    playerVideoWrapper.innerHTML = `
-      <div class="unsupported-hint">
-        <div style="font-size:56px;margin-bottom:16px;">📺</div>
-        <p style="font-size:var(--font-lg);font-weight:600;color:#fff;margin-bottom:8px;">${escapeHtml(platformName)} 视频</p>
-        <p style="color:rgba(255,255,255,0.6);font-size:var(--font-sm);margin-bottom:20px;">${escapeHtml(domain)}</p>
-        <p style="color:rgba(255,255,255,0.8);font-size:var(--font-md);margin-bottom:28px;">在 ${escapeHtml(platformName)} App 或浏览器中观看</p>
-        <a class="btn btn-primary" href="${escapeHtml(url)}" target="_blank" rel="noopener" style="font-size:var(--font-lg);padding:20px 48px;text-decoration:none;display:inline-block;">
-          👆 点这里打开视频
-        </a>
-        <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin-top:20px;">打开后如要返回，请切换回浏览器</p>
-      </div>`;
+
+    if (isWeChat) {
+      // 微信视频号无法在浏览器播放，显示友好提示
+      playerVideoWrapper.innerHTML = `
+        <div class="unsupported-hint">
+          <div style="font-size:56px;margin-bottom:16px;">💬</div>
+          <p style="font-size:var(--font-lg);font-weight:600;color:#fff;margin-bottom:8px;">微信视频号</p>
+          <p style="color:rgba(255,255,255,0.6);font-size:var(--font-sm);margin-bottom:24px;">这个视频只能在微信里看</p>
+          <p style="color:rgba(255,255,255,0.8);font-size:var(--font-md);margin-bottom:28px;line-height:1.6;">
+            让家人帮忙<br>把视频下载后上传到这里
+          </p>
+          <p style="color:rgba(255,255,255,0.35);font-size:0.8rem;">
+            （返回后点标题5次进入管理模式）
+          </p>
+        </div>`;
+    } else {
+      playerVideoWrapper.innerHTML = `
+        <div class="unsupported-hint">
+          <div style="font-size:56px;margin-bottom:16px;">📺</div>
+          <p style="font-size:var(--font-lg);font-weight:600;color:#fff;margin-bottom:8px;">${escapeHtml(platformName)} 视频</p>
+          <p style="color:rgba(255,255,255,0.6);font-size:var(--font-sm);margin-bottom:20px;">${escapeHtml(domain)}</p>
+          <p style="color:rgba(255,255,255,0.8);font-size:var(--font-md);margin-bottom:28px;">在 ${escapeHtml(platformName)} App 或浏览器中观看</p>
+          <a class="btn btn-primary" href="${escapeHtml(url)}" target="_blank" rel="noopener" style="font-size:var(--font-lg);padding:20px 48px;text-decoration:none;display:inline-block;">
+            👆 点这里打开视频
+          </a>
+          <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin-top:20px;">打开后如要返回，请切换回浏览器</p>
+        </div>`;
+    }
   }
 
   function closePlayer() {
@@ -1132,9 +1150,14 @@ html, body {
     return platforms.some(p => p.test(url));
   }
 
+  // 检测是否为微信视频号链接（浏览器无法播放）
+  function isWeChatVideoUrl(url) {
+    return /channels\.weixin\.qq\.com|finder\.video\.qq\.com|weixin\.qq\.com/i.test(url);
+  }
+
   // 获取平台中文名称
   function getPlatformName(url) {
-    if (/channels\.weixin\.qq\.com|finder\.video\.qq\.com|weixin\.qq\.com/i.test(url)) return '微信视频号';
+    if (isWeChatVideoUrl(url)) return '微信视频号';
     if (/douyin\.com/i.test(url)) return '抖音';
     if (/kuaishou\.com/i.test(url)) return '快手';
     if (/xiaohongshu\.com|xhslink\.com/i.test(url)) return '小红书';
