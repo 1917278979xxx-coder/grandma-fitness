@@ -845,7 +845,7 @@ html, body {
   // ============================
   //  Cloud Sync (json.lighttools.net - free, no registration)
   // ============================
-  const SYNC_API = 'https://api.json.lighttools.net/json';
+  const SYNC_API = 'https://json.lighttools.net/json';
 
   function getSyncApiUrl(syncCode) {
     return `${SYNC_API}/${encodeURIComponent(syncCode)}`;
@@ -854,25 +854,22 @@ html, body {
   async function generateSyncCode() {
     showToast('🔄 正在生成同步码...', 3000);
 
-    // Initialize empty storage on lighttools
-    const resp = await fetch(SYNC_API, {
+    // Call /json/create to get a new key
+    const resp = await fetch(`https://json.lighttools.net/json/create`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ _app: 'grandma-fitness', videos: [], deviceName: getDeviceName() })
+      body: JSON.stringify({ _app: 'grandma-fitness' })
     });
 
-    if (!resp.ok) {
-      const text = await resp.text().catch(() => '');
-      throw new Error(`生成失败 (${resp.status})${text ? ': ' + text.slice(0, 100) : ''}`);
+    const result = await resp.json();
+    if (result.code !== 200 && result.code !== 0) {
+      throw new Error(result.message || `生成失败 (code ${result.code})`);
     }
-
-    const data = await resp.json();
-    // The API returns the generated key
-    const key = data.key || data.id || data.json_key;
-    if (!key) {
-      // Fallback: try to extract from response
-      throw new Error('未能获取同步码，请重试');
-    }
+    // Key is in data array or directly
+    const key = (result.data && result.data[0] && result.data[0].jsonkey)
+             || (result.data && result.data.jsonkey)
+             || result.jsonkey;
+    if (!key) throw new Error('未能获取同步码，请重试');
     return key;
   }
 
