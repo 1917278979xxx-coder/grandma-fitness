@@ -688,6 +688,13 @@ html, body {
                 在 CloudBase 控制台「概览」页面复制
               </p>
             </div>
+            <div class="form-group">
+              <label for="cbAccessToken">Access Token</label>
+              <input class="form-input" type="password" id="cbAccessToken" placeholder="eyJhbGci..." autocomplete="off" style="font-size:0.85rem">
+              <p style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">
+                「扩展能力 → HTTP API → 访问令牌」页面复制。密码型输入框，旁人看不到
+              </p>
+            </div>
             <p style="font-size:0.75rem;color:var(--text-secondary);margin:4px 0;line-height:1.5">
               ⚠️ 重要：前往「环境配置 → 安全配置 → 安全域名」，添加 <code style="background:#f0e6db;padding:1px 4px;border-radius:3px">1917278979xxx-coder.github.io</code>
             </p>
@@ -862,49 +869,14 @@ html, body {
   }
 
   // ============================
-  //  Cloud Sync (CloudBase SDK)
+  //  Cloud Sync (CloudBase HTTP REST API)
   // ============================
-  let cbReady = false;
-  let cbLoadPromise = null;
 
-  function ensureCloudBaseLoaded() {
-    if (cbReady) return Promise.resolve();
-    if (cbLoadPromise) return cbLoadPromise;
-
-    cbLoadPromise = new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = 'https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.full.js';
-      s.onload = () => {
-        cbReady = true;
-        resolve();
-      };
-      s.onerror = () => {
-        cbLoadPromise = null; // allow retry
-        reject(new Error('CloudBase SDK 加载失败，请检查网络连接'));
-      };
-      document.head.appendChild(s);
-    });
-    return cbLoadPromise;
-  }
-
-  async function getCloudBaseApp() {
+  function getCloudApiBase() {
     const cfg = meta.cloudConfig;
     if (!cfg || !cfg.envId) throw new Error('请先配置 CloudBase 环境 ID');
-
-    const app = cloudbase.init({ env: cfg.envId });
-
-    // Anonymous sign-in (required before database operations)
-    const auth = app.auth({ persistence: 'local' });
-    try {
-      await auth.anonymousAuthProvider().signIn();
-    } catch(err) {
-      // If already signed in, that's fine — just continue
-      if (!err.message || !err.message.includes('already')) {
-        console.warn('CloudBase auth warning:', err.message);
-      }
-    }
-
-    return app;
+    if (!cfg.accessToken) throw new Error('请先填写 Access Token');
+    return `https://${cfg.envId}.api.tcloudbasegateway.com/v1/databases/grandma_fitness_sync/documents`;
   }
 
   function getDeviceName() {
@@ -930,14 +902,14 @@ html, body {
     if (msg.includes('Failed to fetch') || msg.includes('NetworkError') ||
         msg.includes('ERR_NAME_NOT_RESOLVED') || msg.includes('ERR_INTERNET_DISCONNECTED'))
       return '网络连接失败，请检查网络后重试';
-    if (msg.includes('permission') || msg.includes('403') || msg.includes('unauthorized'))
-      return '权限不足 — 请在 CloudBase 控制台中添加当前网站域名到安全域名列表';
+    if (msg.includes('401') || msg.includes('403') || msg.includes('unauthorized'))
+      return '认证失败 — 请检查 Access Token 是否正确';
     if (msg.includes('404') || msg.includes('not found') || msg.includes('not-found'))
       return '云端数据不存在，请检查同步码是否正确';
     if (msg.includes('429') || msg.includes('limit') || msg.includes('exceeded'))
       return '请求太频繁，请稍后再试';
     // Our own errors pass through
-    if (msg.includes('请先配置') || msg.includes('请先设置') ||
+    if (msg.includes('请先配置') || msg.includes('请先填写') || msg.includes('请先设置') ||
         msg.includes('云端没有找到数据') || msg.includes('当前处于离线'))
       return msg;
     return `同步失败：${msg}`;
@@ -957,8 +929,8 @@ html, body {
     const codeErr = validateSyncCode(syncCode);
     if (codeErr) throw new Error(codeErr);
 
-    await ensureCloudBaseLoaded();
-    const app = await getCloudBaseApp();
+    const baseUrl = getCloudApiBase();
+    const token = meta.cloudConfig.accessToken;
 
     showToast('☁️ 正在上传...', 3000);
 
@@ -973,12 +945,24 @@ html, body {
       order: v.order
     }));
 
-    const db = app.database();
-    await db.collection('grandma_fitness_sync').doc(syncCode.toString()).set({
-      videos: videoData,
-      deviceName: getDeviceName(),
-      updatedAt: new Date().toISOString()
+    const url = `${baseUrl}/${encodeURIComponent(syncCode)}`;
+    const resp = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        videos: videoData,
+        deviceName: getDeviceName(),
+        updatedAt: new Date().toISOString()
+      })
     });
+
+    if (!resp.ok) {
+      const text = await resp.text().catch(() => '');
+      throw new Error(`请求失败 (${resp.status})${text ? ': ' + text.slice(0, 100) : ''}`);
+    }
 
     meta.syncCode = syncCode;
     meta.lastSyncAt = Date.now();
@@ -996,19 +980,29 @@ html, body {
     const codeErr = validateSyncCode(syncCode);
     if (codeErr) throw new Error(codeErr);
 
-    await ensureCloudBaseLoaded();
-    const app = await getCloudBaseApp();
+    const baseUrl = getCloudApiBase();
+    const token = meta.cloudConfig.accessToken;
 
     showToast('☁️ 正在下载...', 3000);
 
-    const db = app.database();
-    const result = await db.collection('grandma_fitness_sync').doc(syncCode.toString()).get();
+    const url = `${baseUrl}/${encodeURIComponent(syncCode)}`;
+    const resp = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
 
-    if (!result.data || result.data.length === 0) {
+    if (resp.status === 404) {
       throw new Error('云端没有找到数据，请先上传或检查同步码');
     }
+    if (!resp.ok) {
+      const text = await resp.text().catch(() => '');
+      throw new Error(`请求失败 (${resp.status})${text ? ': ' + text.slice(0, 100) : ''}`);
+    }
 
-    const cloudData = result.data[0];
+    const cloudData = await resp.json();
     const cloudVideos = cloudData.videos || [];
 
     const localCount = meta.videos.length;
@@ -1058,6 +1052,7 @@ html, body {
     const cfg = meta.cloudConfig;
     if (cfg) {
       cbEnvId.value = cfg.envId || '';
+      cbAccessToken.value = cfg.accessToken || '';
     }
     syncCodeInput.value = meta.syncCode || '';
     updateSyncStatus();
@@ -1112,6 +1107,7 @@ html, body {
   const syncBody = $('#syncBody');
   const syncExpandHint = $('#syncExpandHint');
   const cbEnvId = $('#cbEnvId');
+  const cbAccessToken = $('#cbAccessToken');
   const cbSaveConfigBtn = $('#cbSaveConfigBtn');
   const cbConfigStatus = $('#cbConfigStatus');
   const syncCodeInput = $('#syncCodeInput');
@@ -1858,12 +1854,10 @@ html, body {
   // Save CloudBase config
   cbSaveConfigBtn.addEventListener('click', () => {
     meta.cloudConfig = {
-      envId: cbEnvId.value.trim()
+      envId: cbEnvId.value.trim(),
+      accessToken: cbAccessToken.value.trim()
     };
     saveMeta(meta);
-    // Reset SDK loading state so it reinitializes with new envId
-    cbReady = false;
-    cbLoadPromise = null;
     cbConfigStatus.style.display = 'inline';
     setTimeout(() => { cbConfigStatus.style.display = 'none'; }, 2000);
     showToast('✅ 云端配置已保存');
