@@ -672,42 +672,32 @@ html, body {
 
         <div id="syncBody" style="display:none">
 
-          <!-- Firebase config -->
-          <details id="firebaseConfigDetails" style="margin-bottom:14px">
+          <!-- LeanCloud config -->
+          <details id="cloudConfigDetails" style="margin-bottom:14px">
             <summary style="font-size:var(--font-sm);font-weight:600;color:var(--text-secondary);cursor:pointer;padding:4px 0">
-              🔧 Firebase 配置 <span style="font-weight:400;color:var(--text-muted)">（点击展开）</span>
+              🔧 LeanCloud 配置 <span style="font-weight:400;color:var(--text-muted)">（点击展开）</span>
             </summary>
             <p style="font-size:0.8rem;color:var(--text-muted);margin:8px 0;line-height:1.6">
-              请前往 <a href="https://console.firebase.google.com" target="_blank" rel="noopener" style="color:var(--warm-orange)">Firebase 控制台</a>
-              创建项目，在「项目设置 → 您的应用 → Web 应用」中获取以下配置信息。
-              创建 Firestore 数据库时选择「测试模式」即可。
+              请前往 <a href="https://console.leancloud.cn" target="_blank" rel="noopener" style="color:var(--warm-orange)">LeanCloud 控制台</a>
+              注册并创建应用（选「开发版」免费），在「设置 → 应用凭证」中获取以下信息。
             </p>
             <div class="form-group">
-              <label for="fcApiKey">apiKey</label>
-              <input class="form-input" type="text" id="fcApiKey" placeholder="AIzaSy..." autocomplete="off" style="font-size:0.85rem">
+              <label for="lcAppId">AppID</label>
+              <input class="form-input" type="text" id="lcAppId" placeholder="xxxxxxxxxxxxxxxxxxxxx" autocomplete="off" style="font-size:0.85rem">
             </div>
             <div class="form-group">
-              <label for="fcAuthDomain">authDomain</label>
-              <input class="form-input" type="text" id="fcAuthDomain" placeholder="my-project.firebaseapp.com" style="font-size:0.85rem">
+              <label for="lcAppKey">AppKey</label>
+              <input class="form-input" type="text" id="lcAppKey" placeholder="xxxxxxxxxxxxxxxxxxxxx" autocomplete="off" style="font-size:0.85rem">
             </div>
             <div class="form-group">
-              <label for="fcProjectId">projectId</label>
-              <input class="form-input" type="text" id="fcProjectId" placeholder="my-project" style="font-size:0.85rem">
+              <label for="lcServer">REST API 服务器地址</label>
+              <input class="form-input" type="text" id="lcServer" placeholder="https://xxxxxxxx.api.lncu.net" style="font-size:0.85rem">
+              <p style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">
+                在应用凭证页面复制「REST API 服务器地址」
+              </p>
             </div>
-            <div class="form-group">
-              <label for="fcStorageBucket">storageBucket</label>
-              <input class="form-input" type="text" id="fcStorageBucket" placeholder="my-project.appspot.com" style="font-size:0.85rem">
-            </div>
-            <div class="form-group">
-              <label for="fcMessagingSenderId">messagingSenderId</label>
-              <input class="form-input" type="text" id="fcMessagingSenderId" placeholder="1234567890" style="font-size:0.85rem">
-            </div>
-            <div class="form-group">
-              <label for="fcAppId">appId</label>
-              <input class="form-input" type="text" id="fcAppId" placeholder="1:123:web:abc123" style="font-size:0.85rem">
-            </div>
-            <button class="btn btn-secondary btn-sm" id="fcSaveConfigBtn">💾 保存配置</button>
-            <span id="fcConfigStatus" style="font-size:0.8rem;color:var(--success);margin-left:8px;display:none">✅ 已保存</span>
+            <button class="btn btn-secondary btn-sm" id="lcSaveConfigBtn">💾 保存配置</button>
+            <span id="lcConfigStatus" style="font-size:0.8rem;color:var(--success);margin-left:8px;display:none">✅ 已保存</span>
           </details>
 
           <!-- Sync code -->
@@ -729,30 +719,6 @@ html, body {
 
           <!-- Status -->
           <div id="syncStatus" style="font-size:var(--font-sm);color:var(--text-secondary);text-align:center;min-height:24px;line-height:1.6"></div>
-
-          <!-- Firestore rules help -->
-          <details style="margin-top:16px">
-            <summary style="font-size:0.8rem;font-weight:600;color:var(--text-muted);cursor:pointer">
-              📖 Firestore 安全规则配置说明
-            </summary>
-            <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:8px;line-height:1.7;background:#faf5ef;padding:12px 14px;border-radius:var(--radius-sm)">
-              <p style="margin-bottom:8px">1. 打开 Firebase 控制台 → 选择项目</p>
-              <p style="margin-bottom:8px">2. 左侧菜单 → Firestore Database → 规则</p>
-              <p style="margin-bottom:8px">3. 将规则修改为：</p>
-              <pre style="background:#3d2c1e;color:#e8dbce;padding:10px 14px;border-radius:8px;overflow-x:auto;font-size:0.75rem;margin:8px 0">rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /grandma_fitness_sync/{syncCode} {
-      allow read, write: if true;
-    }
-  }
-}</pre>
-              <p style="margin-bottom:4px">4. 点击「发布」</p>
-              <p style="color:var(--text-muted);margin-top:8px">
-                💡 同步码就像「共享密码」，知道同步码的人才能访问对应的视频列表。建议设置一个不容易被猜到的同步码（如中英文混合）。
-              </p>
-            </div>
-          </details>
         </div>
       </div>
     </div>
@@ -862,10 +828,14 @@ service cloud.firestore {
         // Version-based migration: v1 -> v2 (add sync fields)
         if (!data.version || data.version < 2) {
           data.version = 2;
-          data.firebaseConfig = data.firebaseConfig || null;
           data.syncCode = data.syncCode || null;
           data.lastSyncAt = data.lastSyncAt || null;
           data.lastSyncDirection = data.lastSyncDirection || null;
+          // Migrate old firebaseConfig to cloudConfig
+          if (data.firebaseConfig && !data.cloudConfig) {
+            data.cloudConfig = null; // drop old invalid config
+          }
+          data.cloudConfig = data.cloudConfig || null;
           // Save migrated data back
           localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
@@ -874,7 +844,7 @@ service cloud.firestore {
           videos: data.videos || [],
           adminPassword: data.adminPassword || null,
           version: data.version || 2,
-          firebaseConfig: data.firebaseConfig || null,
+          cloudConfig: data.cloudConfig || null,
           syncCode: data.syncCode || null,
           lastSyncAt: data.lastSyncAt || null,
           lastSyncDirection: data.lastSyncDirection || null
@@ -883,7 +853,7 @@ service cloud.firestore {
     } catch(e) { /* corrupted data */ }
     return {
       videos: [], adminPassword: null, version: 2,
-      firebaseConfig: null, syncCode: null,
+      cloudConfig: null, syncCode: null,
       lastSyncAt: null, lastSyncDirection: null
     };
   }
@@ -897,75 +867,29 @@ service cloud.firestore {
   }
 
   // ============================
-  //  Firebase Sync
+  //  Cloud Sync (LeanCloud REST API)
   // ============================
-  let firebaseReady = false;
-  let firebaseLoadPromise = null;
 
-  function ensureFirebaseLoaded() {
-    if (firebaseReady) return Promise.resolve();
-    if (firebaseLoadPromise) return firebaseLoadPromise;
-
-    firebaseLoadPromise = new Promise((resolve, reject) => {
-      const compatUrl = 'https://www.gstatic.com/firebasejs/11.6.0/firebase-';
-      const scripts = [
-        compatUrl + 'app-compat.js',
-        compatUrl + 'firestore-compat.js'
-      ];
-      let loaded = 0;
-      let hasError = false;
-      scripts.forEach(src => {
-        const s = document.createElement('script');
-        s.src = src;
-        s.onload = () => {
-          loaded++;
-          if (loaded === 2) {
-            firebaseReady = true;
-            resolve();
-          }
-        };
-        s.onerror = () => {
-          if (!hasError) {
-            hasError = true;
-            firebaseLoadPromise = null;  // allow retry
-            reject(new Error('Firebase SDK 加载失败，请检查网络连接'));
-          }
-        };
-        document.head.appendChild(s);
-      });
-    });
-    return firebaseLoadPromise;
+  function getCloudHeaders() {
+    const cfg = meta.cloudConfig;
+    if (!cfg || !cfg.appId || !cfg.appKey) throw new Error('请先配置 LeanCloud');
+    return {
+      'X-LC-Id': cfg.appId,
+      'X-LC-Key': cfg.appKey,
+      'Content-Type': 'application/json'
+    };
   }
 
-  function getFirestore() {
-    const cfg = meta.firebaseConfig;
-    if (!cfg || !cfg.apiKey) throw new Error('请先配置 Firebase');
-
-    // Named app to avoid conflicts; reuse if already initialized
-    let app;
-    try {
-      app = firebase.app('grandmaFitnessApp');
-    } catch(e) {
-      app = firebase.initializeApp(cfg, 'grandmaFitnessApp');
-    }
-    // Enable offline persistence for better mobile experience
-    const db = firebase.firestore(app);
-    db.enablePersistence({ synchronizeTabs: false }).catch(err => {
-      if (err.code === 'failed-precondition') {
-        // Multiple tabs open — that's fine, firestore works without persistence
-        console.warn('Firestore persistence unavailable (multiple tabs)');
-      } else if (err.code === 'unimplemented') {
-        // Browser doesn't support IndexedDB persistence
-        console.warn('Firestore persistence not supported by this browser');
-      }
-    });
-    return db;
+  function getCloudBaseUrl() {
+    const cfg = meta.cloudConfig;
+    if (!cfg || !cfg.server) throw new Error('请先配置 LeanCloud 服务器地址');
+    // Ensure no trailing slash
+    return cfg.server.replace(/\/+$/, '');
   }
 
   function getDeviceName() {
     try {
       const ua = navigator.userAgent;
-      // Extract simple device name
       if (/iPhone/i.test(ua)) return 'iPhone';
       if (/iPad/i.test(ua)) return 'iPad';
       if (/Android/i.test(ua)) {
@@ -981,24 +905,23 @@ service cloud.firestore {
     }
   }
 
-  function getFirebaseErrorMessage(error) {
+  function getSyncErrorMessage(error) {
     const msg = error.message || String(error);
     if (msg.includes('Failed to fetch') || msg.includes('NetworkError') ||
         msg.includes('ERR_NAME_NOT_RESOLVED') || msg.includes('ERR_INTERNET_DISCONNECTED'))
       return '网络连接失败，请检查网络后重试';
-    if (msg.includes('permission-denied') || msg.includes('Missing or insufficient permissions'))
-      return '权限不足 — 请在 Firebase 控制台中配置 Firestore 安全规则（展开下方说明查看）';
-    if (msg.includes('not-found'))
+    if (msg.includes('401') || msg.includes('403'))
+      return '认证失败 — 请检查 AppID 和 AppKey 是否正确';
+    if (msg.includes('404'))
       return '云端数据不存在，请检查同步码是否正确';
-    if (msg.includes('resource-exhausted'))
-      return '云端配额已用尽，请稍后再试';
-    if (msg.includes('unavailable') || msg.includes('UNAVAILABLE'))
-      return 'Firebase 服务暂时不可用，请稍后重试';
-    if (msg.includes('deadline-exceeded'))
-      return '请求超时，请检查网络连接';
-    if (msg.includes('请先配置 Firebase') || msg.includes('请先设置同步码') ||
-        msg.includes('云端没有找到数据'))
-      return msg; // Our own errors, pass through
+    if (msg.includes('429'))
+      return '请求太频繁，请稍后再试（免费版限制 5次/秒）';
+    if (msg.includes('500') || msg.includes('502') || msg.includes('503'))
+      return '云端服务暂时不可用，请稍后重试';
+    // Our own errors pass through
+    if (msg.includes('请先配置') || msg.includes('请先设置') ||
+        msg.includes('云端没有找到数据') || msg.includes('当前处于离线'))
+      return msg;
     return `同步失败：${msg}`;
   }
 
@@ -1017,10 +940,9 @@ service cloud.firestore {
     const codeErr = validateSyncCode(syncCode);
     if (codeErr) throw new Error(codeErr);
 
-    await ensureFirebaseLoaded();
-    const db = getFirestore();
+    const baseUrl = getCloudBaseUrl();
+    const headers = getCloudHeaders();
 
-    // Show a brief loading toast
     showToast('☁️ 正在上传...', 3000);
 
     const videoData = meta.videos.map(v => ({
@@ -1034,11 +956,19 @@ service cloud.firestore {
       order: v.order
     }));
 
-    await db.collection('grandma_fitness_sync').doc(syncCode).set({
-      videos: videoData,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      deviceName: getDeviceName()
+    const url = `${baseUrl}/1.1/classes/grandma_fitness_sync/${encodeURIComponent(syncCode)}`;
+    const resp = await fetch(url, {
+      method: 'PUT',
+      headers: headers,
+      body: JSON.stringify({
+        videos: videoData,
+        deviceName: getDeviceName()
+      })
     });
+
+    if (!resp.ok) {
+      throw new Error(`请求失败 (${resp.status})`);
+    }
 
     // Save sync state locally
     meta.syncCode = syncCode;
@@ -1059,15 +989,25 @@ service cloud.firestore {
     const codeErr = validateSyncCode(syncCode);
     if (codeErr) throw new Error(codeErr);
 
-    await ensureFirebaseLoaded();
-    const db = getFirestore();
+    const baseUrl = getCloudBaseUrl();
+    const headers = getCloudHeaders();
 
     showToast('☁️ 正在下载...', 3000);
 
-    const doc = await db.collection('grandma_fitness_sync').doc(syncCode).get();
-    if (!doc.exists) throw new Error('云端没有找到数据，请先上传或检查同步码');
+    const url = `${baseUrl}/1.1/classes/grandma_fitness_sync/${encodeURIComponent(syncCode)}`;
+    const resp = await fetch(url, {
+      method: 'GET',
+      headers: headers
+    });
 
-    const cloudData = doc.data();
+    if (resp.status === 404) {
+      throw new Error('云端没有找到数据，请先上传或检查同步码');
+    }
+    if (!resp.ok) {
+      throw new Error(`请求失败 (${resp.status})`);
+    }
+
+    const cloudData = await resp.json();
     const cloudVideos = cloudData.videos || [];
 
     // Show confirmation
@@ -1118,15 +1058,12 @@ service cloud.firestore {
   }
 
   function populateSyncConfigFields() {
-    // Populate Firebase config fields from stored meta
-    const cfg = meta.firebaseConfig;
+    // Populate LeanCloud config fields from stored meta
+    const cfg = meta.cloudConfig;
     if (cfg) {
-      fcApiKey.value = cfg.apiKey || '';
-      fcAuthDomain.value = cfg.authDomain || '';
-      fcProjectId.value = cfg.projectId || '';
-      fcStorageBucket.value = cfg.storageBucket || '';
-      fcMessagingSenderId.value = cfg.messagingSenderId || '';
-      fcAppId.value = cfg.appId || '';
+      lcAppId.value = cfg.appId || '';
+      lcAppKey.value = cfg.appKey || '';
+      lcServer.value = cfg.server || '';
     }
     syncCodeInput.value = meta.syncCode || '';
     updateSyncStatus();
@@ -1180,14 +1117,11 @@ service cloud.firestore {
   const syncSectionHeader = $('#syncSectionHeader');
   const syncBody = $('#syncBody');
   const syncExpandHint = $('#syncExpandHint');
-  const fcApiKey = $('#fcApiKey');
-  const fcAuthDomain = $('#fcAuthDomain');
-  const fcProjectId = $('#fcProjectId');
-  const fcStorageBucket = $('#fcStorageBucket');
-  const fcMessagingSenderId = $('#fcMessagingSenderId');
-  const fcAppId = $('#fcAppId');
-  const fcSaveConfigBtn = $('#fcSaveConfigBtn');
-  const fcConfigStatus = $('#fcConfigStatus');
+  const lcAppId = $('#lcAppId');
+  const lcAppKey = $('#lcAppKey');
+  const lcServer = $('#lcServer');
+  const lcSaveConfigBtn = $('#lcSaveConfigBtn');
+  const lcConfigStatus = $('#lcConfigStatus');
   const syncCodeInput = $('#syncCodeInput');
   const syncPushBtn = $('#syncPushBtn');
   const syncPullBtn = $('#syncPullBtn');
@@ -1923,37 +1857,23 @@ service cloud.firestore {
       syncBody.style.display = 'block';
       syncExpandHint.textContent = '（点击收起）';
       populateSyncConfigFields();
-      // Preload Firebase SDK in background
-      ensureFirebaseLoaded().catch(() => {
-        // Will surface error when user actually clicks push/pull
-      });
     } else {
       syncBody.style.display = 'none';
       syncExpandHint.textContent = '（点击展开）';
     }
   });
 
-  // Save Firebase config
-  fcSaveConfigBtn.addEventListener('click', () => {
-    meta.firebaseConfig = {
-      apiKey: fcApiKey.value.trim(),
-      authDomain: fcAuthDomain.value.trim(),
-      projectId: fcProjectId.value.trim(),
-      storageBucket: fcStorageBucket.value.trim(),
-      messagingSenderId: fcMessagingSenderId.value.trim(),
-      appId: fcAppId.value.trim()
+  // Save LeanCloud config
+  lcSaveConfigBtn.addEventListener('click', () => {
+    meta.cloudConfig = {
+      appId: lcAppId.value.trim(),
+      appKey: lcAppKey.value.trim(),
+      server: lcServer.value.trim()
     };
     saveMeta(meta);
-    // Reset named Firebase app so it reinitializes with new config
-    try {
-      const oldApp = firebase.app('grandmaFitnessApp');
-      oldApp.delete().catch(() => {});
-    } catch(e) { /* didn't exist */ }
-    firebaseReady = false;
-    firebaseLoadPromise = null;
-    fcConfigStatus.style.display = 'inline';
-    setTimeout(() => { fcConfigStatus.style.display = 'none'; }, 2000);
-    showToast('✅ Firebase 配置已保存');
+    lcConfigStatus.style.display = 'inline';
+    setTimeout(() => { lcConfigStatus.style.display = 'none'; }, 2000);
+    showToast('✅ 云端配置已保存');
   });
 
   // Push to cloud
@@ -1970,7 +1890,7 @@ service cloud.firestore {
       showToast(`✅ 已上传 ${meta.videos.length} 个视频到云端！`);
     } catch(err) {
       console.error('Push failed:', err);
-      showToast(`❌ ${getFirebaseErrorMessage(err)}`, 4000);
+      showToast(`❌ ${getSyncErrorMessage(err)}`, 4000);
     } finally {
       syncPushBtn.disabled = false;
       syncPullBtn.disabled = false;
@@ -1986,7 +1906,7 @@ service cloud.firestore {
       showToast(`✅ 已从云端同步 ${meta.videos.length} 个视频！`);
     } catch(err) {
       console.error('Pull failed:', err);
-      showToast(`❌ ${getFirebaseErrorMessage(err)}`, 4000);
+      showToast(`❌ ${getSyncErrorMessage(err)}`, 4000);
     } finally {
       syncPushBtn.disabled = false;
       syncPullBtn.disabled = false;
