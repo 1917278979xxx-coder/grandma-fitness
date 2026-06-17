@@ -672,32 +672,27 @@ html, body {
 
         <div id="syncBody" style="display:none">
 
-          <!-- LeanCloud config -->
+          <!-- CloudBase config -->
           <details id="cloudConfigDetails" style="margin-bottom:14px">
             <summary style="font-size:var(--font-sm);font-weight:600;color:var(--text-secondary);cursor:pointer;padding:4px 0">
-              🔧 LeanCloud 配置 <span style="font-weight:400;color:var(--text-muted)">（点击展开）</span>
+              🔧 腾讯云 CloudBase 配置 <span style="font-weight:400;color:var(--text-muted)">（点击展开）</span>
             </summary>
             <p style="font-size:0.8rem;color:var(--text-muted);margin:8px 0;line-height:1.6">
-              请前往 <a href="https://console.leancloud.cn" target="_blank" rel="noopener" style="color:var(--warm-orange)">LeanCloud 控制台</a>
-              注册并创建应用（选「开发版」免费），在「设置 → 应用凭证」中获取以下信息。
+              请前往 <a href="https://console.cloud.tencent.com/tcb" target="_blank" rel="noopener" style="color:var(--warm-orange)">腾讯云 CloudBase 控制台</a>
+              创建环境（选「免费体验版」），在「概览」页面复制环境 ID。
             </p>
             <div class="form-group">
-              <label for="lcAppId">AppID</label>
-              <input class="form-input" type="text" id="lcAppId" placeholder="xxxxxxxxxxxxxxxxxxxxx" autocomplete="off" style="font-size:0.85rem">
-            </div>
-            <div class="form-group">
-              <label for="lcAppKey">AppKey</label>
-              <input class="form-input" type="text" id="lcAppKey" placeholder="xxxxxxxxxxxxxxxxxxxxx" autocomplete="off" style="font-size:0.85rem">
-            </div>
-            <div class="form-group">
-              <label for="lcServer">REST API 服务器地址</label>
-              <input class="form-input" type="text" id="lcServer" placeholder="https://xxxxxxxx.api.lncu.net" style="font-size:0.85rem">
+              <label for="cbEnvId">环境 ID</label>
+              <input class="form-input" type="text" id="cbEnvId" placeholder="grandma-fitness-xxxxxxxx" autocomplete="off" style="font-size:0.85rem">
               <p style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">
-                在应用凭证页面复制「REST API 服务器地址」
+                在 CloudBase 控制台「概览」页面复制
               </p>
             </div>
-            <button class="btn btn-secondary btn-sm" id="lcSaveConfigBtn">💾 保存配置</button>
-            <span id="lcConfigStatus" style="font-size:0.8rem;color:var(--success);margin-left:8px;display:none">✅ 已保存</span>
+            <p style="font-size:0.75rem;color:var(--text-secondary);margin:4px 0;line-height:1.5">
+              ⚠️ 重要：前往「环境配置 → 安全配置 → 安全域名」，添加 <code style="background:#f0e6db;padding:1px 4px;border-radius:3px">1917278979xxx-coder.github.io</code>
+            </p>
+            <button class="btn btn-secondary btn-sm" id="cbSaveConfigBtn">💾 保存配置</button>
+            <span id="cbConfigStatus" style="font-size:0.8rem;color:var(--success);margin-left:8px;display:none">✅ 已保存</span>
           </details>
 
           <!-- Sync code -->
@@ -867,24 +862,49 @@ html, body {
   }
 
   // ============================
-  //  Cloud Sync (LeanCloud REST API)
+  //  Cloud Sync (CloudBase SDK)
   // ============================
+  let cbReady = false;
+  let cbLoadPromise = null;
 
-  function getCloudHeaders() {
-    const cfg = meta.cloudConfig;
-    if (!cfg || !cfg.appId || !cfg.appKey) throw new Error('请先配置 LeanCloud');
-    return {
-      'X-LC-Id': cfg.appId,
-      'X-LC-Key': cfg.appKey,
-      'Content-Type': 'application/json'
-    };
+  function ensureCloudBaseLoaded() {
+    if (cbReady) return Promise.resolve();
+    if (cbLoadPromise) return cbLoadPromise;
+
+    cbLoadPromise = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://static.cloudbase.net/cloudbase-js-sdk/latest/cloudbase.full.js';
+      s.onload = () => {
+        cbReady = true;
+        resolve();
+      };
+      s.onerror = () => {
+        cbLoadPromise = null; // allow retry
+        reject(new Error('CloudBase SDK 加载失败，请检查网络连接'));
+      };
+      document.head.appendChild(s);
+    });
+    return cbLoadPromise;
   }
 
-  function getCloudBaseUrl() {
+  async function getCloudBaseApp() {
     const cfg = meta.cloudConfig;
-    if (!cfg || !cfg.server) throw new Error('请先配置 LeanCloud 服务器地址');
-    // Ensure no trailing slash
-    return cfg.server.replace(/\/+$/, '');
+    if (!cfg || !cfg.envId) throw new Error('请先配置 CloudBase 环境 ID');
+
+    const app = cloudbase.init({ env: cfg.envId });
+
+    // Anonymous sign-in (required before database operations)
+    const auth = app.auth({ persistence: 'local' });
+    try {
+      await auth.anonymousAuthProvider().signIn();
+    } catch(err) {
+      // If already signed in, that's fine — just continue
+      if (!err.message || !err.message.includes('already')) {
+        console.warn('CloudBase auth warning:', err.message);
+      }
+    }
+
+    return app;
   }
 
   function getDeviceName() {
@@ -910,14 +930,12 @@ html, body {
     if (msg.includes('Failed to fetch') || msg.includes('NetworkError') ||
         msg.includes('ERR_NAME_NOT_RESOLVED') || msg.includes('ERR_INTERNET_DISCONNECTED'))
       return '网络连接失败，请检查网络后重试';
-    if (msg.includes('401') || msg.includes('403'))
-      return '认证失败 — 请检查 AppID 和 AppKey 是否正确';
-    if (msg.includes('404'))
+    if (msg.includes('permission') || msg.includes('403') || msg.includes('unauthorized'))
+      return '权限不足 — 请在 CloudBase 控制台中添加当前网站域名到安全域名列表';
+    if (msg.includes('404') || msg.includes('not found') || msg.includes('not-found'))
       return '云端数据不存在，请检查同步码是否正确';
-    if (msg.includes('429'))
-      return '请求太频繁，请稍后再试（免费版限制 5次/秒）';
-    if (msg.includes('500') || msg.includes('502') || msg.includes('503'))
-      return '云端服务暂时不可用，请稍后重试';
+    if (msg.includes('429') || msg.includes('limit') || msg.includes('exceeded'))
+      return '请求太频繁，请稍后再试';
     // Our own errors pass through
     if (msg.includes('请先配置') || msg.includes('请先设置') ||
         msg.includes('云端没有找到数据') || msg.includes('当前处于离线'))
@@ -933,15 +951,14 @@ html, body {
   }
 
   async function pushToCloud() {
-    // Check online
     if (!navigator.onLine) throw new Error('当前处于离线状态，无法上传');
 
     const syncCode = (meta.syncCode || syncCodeInput.value.trim()).trim();
     const codeErr = validateSyncCode(syncCode);
     if (codeErr) throw new Error(codeErr);
 
-    const baseUrl = getCloudBaseUrl();
-    const headers = getCloudHeaders();
+    await ensureCloudBaseLoaded();
+    const app = await getCloudBaseApp();
 
     showToast('☁️ 正在上传...', 3000);
 
@@ -956,61 +973,44 @@ html, body {
       order: v.order
     }));
 
-    const url = `${baseUrl}/1.1/classes/grandma_fitness_sync/${encodeURIComponent(syncCode)}`;
-    const resp = await fetch(url, {
-      method: 'PUT',
-      headers: headers,
-      body: JSON.stringify({
-        videos: videoData,
-        deviceName: getDeviceName()
-      })
+    const db = app.database();
+    await db.collection('grandma_fitness_sync').doc(syncCode.toString()).set({
+      videos: videoData,
+      deviceName: getDeviceName(),
+      updatedAt: new Date().toISOString()
     });
 
-    if (!resp.ok) {
-      throw new Error(`请求失败 (${resp.status})`);
-    }
-
-    // Save sync state locally
     meta.syncCode = syncCode;
     meta.lastSyncAt = Date.now();
     meta.lastSyncDirection = 'push';
     saveMeta(meta);
 
-    // Update UI
     syncCodeInput.value = syncCode;
     updateSyncStatus();
   }
 
   async function pullFromCloud() {
-    // Check online
     if (!navigator.onLine) throw new Error('当前处于离线状态，无法下载');
 
     const syncCode = (meta.syncCode || syncCodeInput.value.trim()).trim();
     const codeErr = validateSyncCode(syncCode);
     if (codeErr) throw new Error(codeErr);
 
-    const baseUrl = getCloudBaseUrl();
-    const headers = getCloudHeaders();
+    await ensureCloudBaseLoaded();
+    const app = await getCloudBaseApp();
 
     showToast('☁️ 正在下载...', 3000);
 
-    const url = `${baseUrl}/1.1/classes/grandma_fitness_sync/${encodeURIComponent(syncCode)}`;
-    const resp = await fetch(url, {
-      method: 'GET',
-      headers: headers
-    });
+    const db = app.database();
+    const result = await db.collection('grandma_fitness_sync').doc(syncCode.toString()).get();
 
-    if (resp.status === 404) {
+    if (!result.data || result.data.length === 0) {
       throw new Error('云端没有找到数据，请先上传或检查同步码');
     }
-    if (!resp.ok) {
-      throw new Error(`请求失败 (${resp.status})`);
-    }
 
-    const cloudData = await resp.json();
+    const cloudData = result.data[0];
     const cloudVideos = cloudData.videos || [];
 
-    // Show confirmation
     const localCount = meta.videos.length;
     const cloudCount = cloudVideos.length;
     if (!confirm(
@@ -1023,19 +1023,16 @@ html, body {
       `确认继续？`
     )) return;
 
-    // Replace local videos with cloud videos
     meta.videos = cloudVideos;
     meta.syncCode = syncCode;
     meta.lastSyncAt = Date.now();
     meta.lastSyncDirection = 'pull';
     saveMeta(meta);
 
-    // Update UI
     syncCodeInput.value = syncCode;
     renderAdminList();
     updateSyncStatus();
 
-    // Check for orphaned local videos
     const orphanedLocals = cloudVideos.filter(v => v.type === 'local');
     if (orphanedLocals.length > 0) {
       showToast(`⚠️ ${orphanedLocals.length} 个本地视频需要在新设备上重新上传文件`, 5000);
@@ -1058,12 +1055,9 @@ html, body {
   }
 
   function populateSyncConfigFields() {
-    // Populate LeanCloud config fields from stored meta
     const cfg = meta.cloudConfig;
     if (cfg) {
-      lcAppId.value = cfg.appId || '';
-      lcAppKey.value = cfg.appKey || '';
-      lcServer.value = cfg.server || '';
+      cbEnvId.value = cfg.envId || '';
     }
     syncCodeInput.value = meta.syncCode || '';
     updateSyncStatus();
@@ -1117,11 +1111,9 @@ html, body {
   const syncSectionHeader = $('#syncSectionHeader');
   const syncBody = $('#syncBody');
   const syncExpandHint = $('#syncExpandHint');
-  const lcAppId = $('#lcAppId');
-  const lcAppKey = $('#lcAppKey');
-  const lcServer = $('#lcServer');
-  const lcSaveConfigBtn = $('#lcSaveConfigBtn');
-  const lcConfigStatus = $('#lcConfigStatus');
+  const cbEnvId = $('#cbEnvId');
+  const cbSaveConfigBtn = $('#cbSaveConfigBtn');
+  const cbConfigStatus = $('#cbConfigStatus');
   const syncCodeInput = $('#syncCodeInput');
   const syncPushBtn = $('#syncPushBtn');
   const syncPullBtn = $('#syncPullBtn');
@@ -1863,16 +1855,17 @@ html, body {
     }
   });
 
-  // Save LeanCloud config
-  lcSaveConfigBtn.addEventListener('click', () => {
+  // Save CloudBase config
+  cbSaveConfigBtn.addEventListener('click', () => {
     meta.cloudConfig = {
-      appId: lcAppId.value.trim(),
-      appKey: lcAppKey.value.trim(),
-      server: lcServer.value.trim()
+      envId: cbEnvId.value.trim()
     };
     saveMeta(meta);
-    lcConfigStatus.style.display = 'inline';
-    setTimeout(() => { lcConfigStatus.style.display = 'none'; }, 2000);
+    // Reset SDK loading state so it reinitializes with new envId
+    cbReady = false;
+    cbLoadPromise = null;
+    cbConfigStatus.style.display = 'inline';
+    setTimeout(() => { cbConfigStatus.style.display = 'none'; }, 2000);
     showToast('✅ 云端配置已保存');
   });
 
