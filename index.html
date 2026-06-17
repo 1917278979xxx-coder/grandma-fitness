@@ -42,7 +42,6 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Hide scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
 
@@ -72,9 +71,109 @@ html, body {
   pointer-events: auto;
 }
 
-/* ===== Elderly Mode ===== */
+/* ===== Login View ===== */
+.login-view {
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  background: var(--bg);
+  gap: 20px;
+}
+.login-view .login-icon {
+  font-size: 72px;
+  animation: bounce 2s ease infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.login-view h1 {
+  font-size: var(--font-xl);
+  color: var(--warm-orange);
+  letter-spacing: 2px;
+  text-align: center;
+}
+.login-view .login-subtitle {
+  font-size: var(--font-sm);
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 8px;
+}
+.login-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.login-card label {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.login-card .form-input {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: var(--radius-sm);
+  border: 2px solid #e8dbce;
+  font-size: var(--font-md);
+  font-family: inherit;
+  background: #fff;
+  color: var(--text);
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+.login-card .form-input:focus {
+  outline: none;
+  border-color: var(--warm-orange);
+}
+.login-error {
+  color: var(--danger);
+  font-size: var(--font-sm);
+  text-align: center;
+  min-height: 20px;
+}
+.login-card .btn-login {
+  padding: 18px;
+  border-radius: 50px;
+  border: none;
+  font-size: var(--font-lg);
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--warm-orange);
+  color: #fff;
+  transition: transform 0.1s, background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.login-card .btn-login:active { transform: scale(0.96); }
+.login-card .btn-login:disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+.login-footer {
+  text-align: center;
+}
+.login-footer a {
+  font-size: var(--font-sm);
+  color: var(--warm-orange);
+  text-decoration: none;
+  cursor: pointer;
+}
+.login-footer a:hover { text-decoration: underline; }
+.login-footer .logout-link {
+  color: var(--text-muted);
+  font-size: var(--font-sm);
+  cursor: pointer;
+  margin-top: 8px;
+  display: inline-block;
+}
 
-/* Header */
+/* ===== Elderly Mode ===== */
 .elderly-header {
   padding: 24px 20px 12px;
   text-align: center;
@@ -88,15 +187,11 @@ html, body {
   cursor: default;
   display: inline-block;
 }
-
-/* Subtitle hint */
 .elderly-subtitle {
   font-size: var(--font-sm);
   color: var(--text-muted);
   margin-top: 4px;
 }
-
-/* Video list */
 .video-list-scroll {
   flex: 1;
   overflow-y: auto;
@@ -105,8 +200,6 @@ html, body {
   flex-direction: column;
   gap: 16px;
 }
-
-/* Empty state */
 .empty-state {
   flex: 1;
   display: flex;
@@ -117,15 +210,8 @@ html, body {
   padding: 40px 20px;
   color: var(--text-muted);
 }
-.empty-state .icon {
-  font-size: 64px;
-  margin-bottom: 16px;
-  opacity: 0.5;
-}
-.empty-state p {
-  font-size: var(--font-md);
-  line-height: 1.6;
-}
+.empty-state .icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
+.empty-state p { font-size: var(--font-md); line-height: 1.6; }
 
 /* Video card */
 .video-card {
@@ -139,444 +225,201 @@ html, body {
   gap: 20px;
   min-height: 90px;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-  -webkit-tap-highlight-color: rgba(224, 123, 60, 0.1);
 }
-.video-card:active {
-  transform: scale(0.97);
-  box-shadow: var(--shadow-hover);
-}
-
+.video-card:active { transform: scale(0.97); box-shadow: var(--shadow-hover); }
 .video-card .card-icon {
-  width: 56px;
-  height: 56px;
+  width: 56px; height: 56px;
   border-radius: 16px;
   background: linear-gradient(135deg, var(--warm-orange-light), var(--warm-orange));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  flex-shrink: 0;
-  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; flex-shrink: 0; color: #fff;
 }
-.video-card .card-info {
-  flex: 1;
-  min-width: 0;
-}
+.video-card .card-info { flex: 1; min-width: 0; }
 .video-card .card-title {
-  font-size: var(--font-lg);
-  font-weight: 600;
+  font-size: var(--font-lg); font-weight: 600;
   color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .video-card .card-duration {
-  font-size: var(--font-sm);
-  color: var(--text-secondary);
-  margin-top: 4px;
+  font-size: var(--font-sm); color: var(--text-secondary); margin-top: 4px;
 }
-.video-card .card-arrow {
-  font-size: 24px;
+.video-card .card-arrow { font-size: 24px; color: var(--text-muted); flex-shrink: 0; }
+
+/* Syncing indicator */
+.sync-indicator {
+  position: fixed;
+  top: 8px;
+  right: 16px;
+  font-size: 0.75rem;
   color: var(--text-muted);
-  flex-shrink: 0;
+  z-index: 5;
+  padding: 4px 10px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 20px;
+  transition: opacity 0.3s;
 }
+.sync-indicator.syncing { color: var(--warm-orange); }
+.sync-indicator.synced { color: var(--success); opacity: 0; transition: opacity 0.5s 1s; }
 
-/* ===== Player View (elderly) ===== */
+/* ===== Player View ===== */
 .player-container {
-  position: absolute;
-  inset: 0;
-  background: #000;
-  display: flex;
-  flex-direction: column;
-  z-index: 10;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
+  position: absolute; inset: 0; background: #000;
+  display: flex; flex-direction: column; z-index: 10;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
 }
-.player-container.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
+.player-container.active { opacity: 1; pointer-events: auto; }
 .player-top {
-  display: flex;
-  align-items: center;
-  padding: 16px 20px;
-  gap: 16px;
-  flex-shrink: 0;
+  display: flex; align-items: center; padding: 16px 20px; gap: 16px; flex-shrink: 0;
 }
 .player-back-btn {
-  background: rgba(255,255,255,0.15);
-  border: none;
-  color: #fff;
-  font-size: var(--font-lg);
-  padding: 12px 24px;
-  border-radius: 50px;
-  cursor: pointer;
-  font-family: inherit;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  -webkit-tap-highlight-color: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.15); border: none; color: #fff;
+  font-size: var(--font-lg); padding: 12px 24px; border-radius: 50px;
+  cursor: pointer; font-family: inherit; font-weight: 600;
+  display: flex; align-items: center; gap: 6px;
   transition: background 0.2s;
 }
-.player-back-btn:active {
-  background: rgba(255,255,255,0.25);
-}
-
+.player-back-btn:active { background: rgba(255,255,255,0.25); }
 .player-video-wrapper {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #000;
-  position: relative;
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  background: #000; position: relative;
 }
 .player-video-wrapper video,
 .player-video-wrapper iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  object-fit: contain;
+  width: 100%; height: 100%; border: none; object-fit: contain;
 }
-
 .player-video-wrapper .unsupported-hint {
-  color: #fff;
-  font-size: var(--font-md);
-  text-align: center;
-  padding: 20px;
+  color: #fff; font-size: var(--font-md); text-align: center; padding: 20px;
 }
 .player-video-wrapper .unsupported-hint a {
-  color: var(--warm-orange-light);
-  font-size: var(--font-lg);
-  display: inline-block;
-  margin-top: 12px;
-  padding: 16px 32px;
-  background: rgba(255,255,255,0.1);
-  border-radius: 50px;
-  text-decoration: none;
+  color: var(--warm-orange-light); font-size: var(--font-lg);
+  display: inline-block; margin-top: 12px; padding: 16px 32px;
+  background: rgba(255,255,255,0.1); border-radius: 50px; text-decoration: none;
 }
-
 .player-controls {
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-  gap: 20px;
-  flex-shrink: 0;
+  display: flex; justify-content: center; padding: 20px; gap: 20px; flex-shrink: 0;
 }
 .player-ctrl-btn {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: none;
-  font-size: 36px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.1s ease, background 0.2s;
+  width: 80px; height: 80px; border-radius: 50%; border: none;
+  font-size: 36px; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; transition: transform 0.1s, background 0.2s;
   font-family: inherit;
-  -webkit-tap-highlight-color: transparent;
 }
-.player-ctrl-btn:active {
-  transform: scale(0.9);
-}
+.player-ctrl-btn:active { transform: scale(0.9); }
 .player-ctrl-btn.play-pause {
-  background: var(--warm-orange);
-  color: #fff;
-  width: 90px;
-  height: 90px;
-  font-size: 40px;
-  box-shadow: 0 4px 20px rgba(224, 123, 60, 0.4);
+  background: var(--warm-orange); color: #fff; width: 90px; height: 90px;
+  font-size: 40px; box-shadow: 0 4px 20px rgba(224, 123, 60, 0.4);
 }
 
 /* ===== Admin Mode ===== */
-.admin-container {
-  padding: 16px 20px 100px;
-  flex: 1;
-  overflow-y: auto;
-}
+.admin-container { padding: 16px 20px 100px; flex: 1; overflow-y: auto; }
 .admin-container h2 {
-  font-size: var(--font-lg);
-  color: var(--text);
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  font-size: var(--font-lg); color: var(--text); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 8px;
 }
-
-/* Admin sections */
-.admin-section {
-  margin-bottom: 24px;
-}
+.admin-section { margin-bottom: 24px; }
 .admin-section h3 {
-  font-size: var(--font-md);
-  color: var(--text-secondary);
-  margin-bottom: 10px;
-  font-weight: 600;
+  font-size: var(--font-md); color: var(--text-secondary); margin-bottom: 10px; font-weight: 600;
 }
 
 /* Buttons */
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 14px 24px;
-  border-radius: 50px;
-  border: none;
-  font-size: var(--font-md);
-  font-family: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.1s, background 0.2s;
-  -webkit-tap-highlight-color: transparent;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 14px 24px; border-radius: 50px; border: none;
+  font-size: var(--font-md); font-family: inherit; font-weight: 600;
+  cursor: pointer; transition: transform 0.1s, background 0.2s;
 }
 .btn:active { transform: scale(0.96); }
-
-.btn-primary {
-  background: var(--warm-orange);
-  color: #fff;
-}
-.btn-secondary {
-  background: #f0e6db;
-  color: var(--text);
-}
-.btn-danger {
-  background: var(--danger);
-  color: #fff;
-}
-.btn-block {
-  width: 100%;
-  justify-content: center;
-}
-.btn-sm {
-  padding: 8px 16px;
-  font-size: var(--font-sm);
-}
+.btn-primary { background: var(--warm-orange); color: #fff; }
+.btn-secondary { background: #f0e6db; color: var(--text); }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-block { width: 100%; justify-content: center; }
+.btn-sm { padding: 8px 16px; font-size: var(--font-sm); }
 
 /* Forms */
-.form-group {
-  margin-bottom: 14px;
-}
+.form-group { margin-bottom: 14px; }
 .form-group label {
-  display: block;
-  font-size: var(--font-sm);
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
+  display: block; font-size: var(--font-sm); font-weight: 600;
+  color: var(--text-secondary); margin-bottom: 6px;
 }
 .form-input {
-  width: 100%;
-  padding: 14px 18px;
-  border-radius: var(--radius-sm);
-  border: 2px solid #e8dbce;
-  font-size: var(--font-md);
-  font-family: inherit;
-  background: #fff;
-  color: var(--text);
-  transition: border-color 0.2s;
-  -webkit-appearance: none;
+  width: 100%; padding: 14px 18px; border-radius: var(--radius-sm);
+  border: 2px solid #e8dbce; font-size: var(--font-md);
+  font-family: inherit; background: #fff; color: var(--text);
+  transition: border-color 0.2s; -webkit-appearance: none;
 }
-.form-input:focus {
-  outline: none;
-  border-color: var(--warm-orange);
-}
+.form-input:focus { outline: none; border-color: var(--warm-orange); }
 
 /* Video item in admin list */
 .admin-video-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  background: #fff;
-  border-radius: var(--radius-sm);
-  margin-bottom: 8px;
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+  background: #fff; border-radius: var(--radius-sm); margin-bottom: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
-.admin-video-item .drag-handle {
-  cursor: grab;
-  color: var(--text-muted);
-  font-size: 20px;
-  padding: 4px;
-}
-.admin-video-item .item-info {
-  flex: 1;
-  min-width: 0;
-}
+.admin-video-item .drag-handle { cursor: grab; color: var(--text-muted); font-size: 20px; padding: 4px; }
+.admin-video-item .item-info { flex: 1; min-width: 0; }
 .admin-video-item .item-title {
-  font-size: var(--font-md);
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: var(--font-md); font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.admin-video-item .item-type {
-  font-size: var(--font-sm);
-  color: var(--text-muted);
-}
+.admin-video-item .item-type { font-size: var(--font-sm); color: var(--text-muted); }
 .admin-video-item .item-delete {
-  background: none;
-  border: none;
-  font-size: 22px;
-  cursor: pointer;
-  color: var(--danger);
-  padding: 8px;
-  border-radius: 8px;
-  transition: background 0.2s;
+  background: none; border: none; font-size: 22px; cursor: pointer;
+  color: var(--danger); padding: 8px; border-radius: 8px; transition: background 0.2s;
 }
-.admin-video-item .item-delete:active {
-  background: rgba(209, 82, 82, 0.1);
-}
+.admin-video-item .item-delete:active { background: rgba(209, 82, 82, 0.1); }
 
-/* Admin bottom bar */
 .admin-bottom {
-  position: sticky;
-  bottom: 0;
-  background: var(--bg);
-  padding: 16px 20px;
-  border-top: 1px solid #e8dbce;
-  display: flex;
-  gap: 12px;
-  flex-shrink: 0;
+  position: sticky; bottom: 0; background: var(--bg); padding: 16px 20px;
+  border-top: 1px solid #e8dbce; display: flex; gap: 12px; flex-shrink: 0;
 }
 
-/* ===== Password Dialog ===== */
-.dialog-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-  padding: 20px;
+/* User info bar in admin */
+.admin-user-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: var(--font-sm); color: var(--text-muted);
+  padding: 8px 0; margin-bottom: 16px;
+  border-bottom: 1px solid #f0e6db;
 }
-.dialog-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
+.admin-user-bar .logout-btn {
+  background: none; border: 1px solid var(--text-muted);
+  color: var(--text-muted); font-size: 0.75rem; padding: 4px 12px;
+  border-radius: 20px; cursor: pointer; font-family: inherit;
 }
-.dialog-box {
-  background: #fff;
-  border-radius: var(--radius);
-  padding: 32px 24px;
-  width: 100%;
-  max-width: 380px;
-  text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-}
-.dialog-box h3 {
-  font-size: var(--font-lg);
-  margin-bottom: 8px;
-  color: var(--text);
-}
-.dialog-box p {
-  font-size: var(--font-sm);
-  color: var(--text-secondary);
-  margin-bottom: 20px;
-}
-.dialog-box .form-input {
-  text-align: center;
-  font-size: 28px;
-  letter-spacing: 12px;
-  max-width: 200px;
-  margin: 0 auto;
-}
-.dialog-box .dialog-error {
-  color: var(--danger);
-  font-size: var(--font-sm);
-  margin-top: 8px;
-  min-height: 20px;
-}
-.dialog-btns {
-  display: flex;
-  gap: 12px;
-  margin-top: 16px;
-}
-.dialog-btns .btn { flex: 1; }
 
 /* ===== Toast ===== */
 .toast {
-  position: fixed;
-  top: 20px;
-  left: 50%;
+  position: fixed; top: 20px; left: 50%;
   transform: translateX(-50%) translateY(-120px);
-  background: #3d2c1e;
-  color: #fff;
-  padding: 14px 28px;
-  border-radius: 50px;
-  font-size: var(--font-md);
-  font-weight: 600;
-  z-index: 200;
-  pointer-events: none;
-  transition: transform 0.3s ease;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  background: #3d2c1e; color: #fff; padding: 14px 28px;
+  border-radius: 50px; font-size: var(--font-md); font-weight: 600;
+  z-index: 200; pointer-events: none;
+  transition: transform 0.3s ease; box-shadow: 0 8px 30px rgba(0,0,0,0.2);
 }
-.toast.show {
-  transform: translateX(-50%) translateY(0);
-}
+.toast.show { transform: translateX(-50%) translateY(0); }
 
 /* ===== Upload progress ===== */
 .progress-bar-wrapper {
-  margin-top: 12px;
-  background: #e8dbce;
-  border-radius: 10px;
-  height: 8px;
-  overflow: hidden;
+  margin-top: 12px; background: #e8dbce; border-radius: 10px;
+  height: 8px; overflow: hidden;
 }
 .progress-bar-fill {
-  height: 100%;
-  background: var(--warm-orange);
-  border-radius: 10px;
-  width: 0%;
-  transition: width 0.3s ease;
+  height: 100%; background: var(--warm-orange); border-radius: 10px;
+  width: 0%; transition: width 0.3s ease;
 }
 
-/* ===== Responsive for very small screens ===== */
+/* ===== Responsive ===== */
 @media (max-width: 400px) {
-  .video-card {
-    padding: 20px;
-    gap: 14px;
-    min-height: 76px;
-  }
-  .video-card .card-icon {
-    width: 44px;
-    height: 44px;
-    font-size: 22px;
-    border-radius: 12px;
-  }
-  .player-ctrl-btn {
-    width: 64px;
-    height: 64px;
-    font-size: 28px;
-  }
-  .player-ctrl-btn.play-pause {
-    width: 72px;
-    height: 72px;
-    font-size: 32px;
-  }
+  .video-card { padding: 20px; gap: 14px; min-height: 76px; }
+  .video-card .card-icon { width: 44px; height: 44px; font-size: 22px; border-radius: 12px; }
+  .player-ctrl-btn { width: 64px; height: 64px; font-size: 28px; }
+  .player-ctrl-btn.play-pause { width: 72px; height: 72px; font-size: 32px; }
 }
-
-/* ===== iPad landscape ===== */
 @media (min-width: 768px) {
-  .video-list-scroll {
-    padding: 12px 32px 100px;
-  }
-  .video-card {
-    min-height: 100px;
-  }
+  .video-list-scroll { padding: 12px 32px 100px; }
+  .video-card { min-height: 100px; }
 }
-
-/* ===== Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
-  }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 </style>
 </head>
@@ -584,38 +427,68 @@ html, body {
 
 <div class="app" id="app">
 
-  <!-- ===== Elderly Mode ===== -->
-  <div class="view active" id="elderlyView">
+  <!-- ===== Login View ===== -->
+  <div class="view active" id="loginView">
+    <div class="login-view" style="flex:1;display:flex">
+      <div class="login-icon">💃</div>
+      <h1>外婆健身操</h1>
+      <p class="login-subtitle">登录后可同步视频列表</p>
 
+      <div class="login-card">
+        <div>
+          <label for="loginEmail">📧 邮箱</label>
+          <input class="form-input" type="email" id="loginEmail"
+                 placeholder="输入邮箱地址" autocomplete="email" inputmode="email">
+        </div>
+        <div>
+          <label for="loginPassword">🔒 密码</label>
+          <input class="form-input" type="password" id="loginPassword"
+                 placeholder="输入密码" autocomplete="current-password">
+        </div>
+        <p class="login-error" id="loginError"></p>
+        <button class="btn-login" id="loginBtn">🔐 登录</button>
+      </div>
+
+      <div class="login-footer">
+        <a id="showSignupLink">首次使用？创建账号</a>
+        <br>
+        <span class="logout-link" id="skipLoginLink" style="display:none">跳过登录，本地使用</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Elderly Mode ===== -->
+  <div class="view" id="elderlyView">
     <div class="elderly-header">
       <h1 id="elderlyTitle">💃 外婆健身操</h1>
       <p class="elderly-subtitle" id="videoCountHint"></p>
     </div>
 
-    <div class="video-list-scroll" id="videoList">
-      <!-- Populated by JS -->
-    </div>
+    <div class="video-list-scroll" id="videoList"></div>
+
+    <div class="sync-indicator" id="syncIndicator" style="display:none"></div>
 
     <!-- Player overlay -->
     <div class="player-container" id="playerContainer">
       <div class="player-top">
         <button class="player-back-btn" id="playerBackBtn">◀ 返回列表</button>
       </div>
-      <div class="player-video-wrapper" id="playerVideoWrapper">
-        <!-- Video/iframe inserted here -->
-      </div>
+      <div class="player-video-wrapper" id="playerVideoWrapper"></div>
       <div class="player-controls">
         <button class="player-ctrl-btn play-pause" id="playerPlayPauseBtn" title="暂停 / 播放">⏸️</button>
       </div>
     </div>
-
   </div>
 
   <!-- ===== Admin Mode ===== -->
   <div class="view" id="adminView">
-
     <div class="admin-container">
       <h2>⚙️ 视频管理</h2>
+
+      <div class="admin-user-bar">
+        <span id="adminUserEmail"></span>
+        <button class="logout-btn" id="adminLogoutBtn">退出登录</button>
+      </div>
 
       <!-- Add link -->
       <div class="admin-section">
@@ -648,40 +521,13 @@ html, body {
       <!-- Video management list -->
       <div class="admin-section">
         <h3>📋 视频列表（长按拖拽排序）</h3>
-        <div id="adminVideoList">
-          <!-- Populated by JS -->
-        </div>
+        <div id="adminVideoList"></div>
         <p style="color:var(--text-muted);font-size:0.8rem;text-align:center" id="emptyAdminHint">暂无视频，请添加上方添加</p>
-      </div>
-
-      <!-- Change password -->
-      <div class="admin-section">
-        <h3>🔒 管理密码</h3>
-        <div class="form-group">
-          <label for="newPassword">新密码（4-6位数字）</label>
-          <input class="form-input" type="password" id="newPassword" placeholder="留空则不修改" maxlength="6" inputmode="numeric" pattern="[0-9]*">
-        </div>
       </div>
     </div>
 
     <div class="admin-bottom">
-      <button class="btn btn-secondary" id="adminCancelBtn" style="flex:1">取消</button>
-      <button class="btn btn-primary" id="adminSaveBtn" style="flex:2">💾 保存并退出</button>
-    </div>
-
-  </div>
-
-  <!-- ===== Password Dialog ===== -->
-  <div class="dialog-overlay" id="passwordDialog">
-    <div class="dialog-box">
-      <h3 id="dialogTitle">🔐 进入管理模式</h3>
-      <p id="dialogMsg">输入管理密码</p>
-      <input class="form-input" type="password" id="dialogPassword" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="····">
-      <p class="dialog-error" id="dialogError"></p>
-      <div class="dialog-btns">
-        <button class="btn btn-secondary" id="dialogCancelBtn">取消</button>
-        <button class="btn btn-primary" id="dialogConfirmBtn">确认</button>
-      </div>
+      <button class="btn btn-secondary" id="adminDoneBtn" style="flex:1">✅ 完成</button>
     </div>
   </div>
 
@@ -690,9 +536,19 @@ html, body {
 
 </div>
 
+<!-- Supabase JS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
 <script>
 (function() {
   'use strict';
+
+  // ============================
+  //  Supabase Init
+  // ============================
+  const SUPABASE_URL = 'https://mbkdigtofgmdkepwsrve.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ia2RpZ3RvZmdtZGtlcHdzcnZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTMyMjcsImV4cCI6MjA5NzI2OTIyN30.BGlRJJbL6BvcZC1XrZTeN_3AOiiQgiAKniXfREunzeQ';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   // ============================
   //  IndexedDB Adapter
@@ -745,52 +601,130 @@ html, body {
     });
   }
 
-  async function idbGetAllKeys() {
-    const db = await openIDB();
-    return new Promise((resolve, reject) => {
-      const tx = db.transaction(IDB_STORE, 'readonly');
-      const req = tx.objectStore(IDB_STORE).getAllKeys();
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error);
+  // ============================
+  //  Supabase Video Operations
+  // ============================
+  async function loadVideosFromSupabase() {
+    const { data, error } = await supabase
+      .from('videos')
+      .select('*')
+      .order('sort_order', { ascending: true });
+
+    if (error) throw error;
+    return (data || []).map(r => ({
+      id: r.id,
+      title: r.title,
+      type: r.type,
+      source: r.source || null,
+      localId: r.local_id || null,
+      fileName: r.file_name || null,
+      fileSize: r.file_size || null,
+      order: r.sort_order || 0
+    }));
+  }
+
+  async function saveVideoToSupabase(video) {
+    const { error } = await supabase.from('videos').upsert({
+      id: video.id,
+      title: video.title,
+      type: video.type,
+      source: video.source || null,
+      local_id: video.localId || null,
+      file_name: video.fileName || null,
+      file_size: video.fileSize || null,
+      sort_order: video.order,
+      updated_at: new Date().toISOString()
     });
+    if (error) throw error;
+  }
+
+  async function deleteVideoFromSupabase(videoId) {
+    const { error } = await supabase.from('videos').delete().eq('id', videoId);
+    if (error) throw error;
+  }
+
+  async function saveAllVideosToSupabase(videos) {
+    const rows = videos.map(v => ({
+      id: v.id,
+      title: v.title,
+      type: v.type,
+      source: v.source || null,
+      local_id: v.localId || null,
+      file_name: v.fileName || null,
+      file_size: v.fileSize || null,
+      sort_order: v.order,
+      updated_at: new Date().toISOString()
+    }));
+
+    // Delete all existing, then insert all (atomic-ish via upsert)
+    const { error } = await supabase.from('videos').upsert(rows);
+    if (error) throw error;
   }
 
   // ============================
-  //  Storage Manager
+  //  Realtime Subscription
   // ============================
-  const STORAGE_KEY = 'grandma_fitness_data';
+  let realtimeChannel = null;
 
-  function loadMeta() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const data = JSON.parse(raw);
-        return {
-          videos: data.videos || [],
-          adminPassword: data.adminPassword || null
-        };
-      }
-    } catch(e) { /* corrupted data */ }
-    return { videos: [], adminPassword: null };
+  function subscribeToChanges() {
+    if (realtimeChannel) {
+      supabase.removeChannel(realtimeChannel);
+    }
+
+    realtimeChannel = supabase
+      .channel('videos-changes')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'videos' },
+        async () => {
+          // Reload videos from Supabase when any change happens
+          try {
+            const videos = await loadVideosFromSupabase();
+            if (currentMode === 'elderly') {
+              renderElderlyList(videos);
+            } else if (currentMode === 'admin') {
+              renderAdminList(videos);
+            }
+            showSyncIndicator('已同步');
+          } catch(e) {
+            showSyncIndicator('同步失败');
+          }
+        }
+      )
+      .subscribe();
   }
 
-  function saveMeta(meta) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(meta));
+  function unsubscribeFromChanges() {
+    if (realtimeChannel) {
+      supabase.removeChannel(realtimeChannel);
+      realtimeChannel = null;
+    }
   }
 
-  function generateId() {
-    return 'v_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+  function showSyncIndicator(status) {
+    const el = $('#syncIndicator');
+    if (!el) return;
+    if (status === 'syncing') {
+      el.style.display = 'block';
+      el.className = 'sync-indicator syncing';
+      el.textContent = '☁️ 同步中...';
+    } else {
+      el.style.display = 'block';
+      el.className = 'sync-indicator synced';
+      el.textContent = '✅ 已同步';
+      setTimeout(() => { el.style.display = 'none'; }, 3000);
+    }
   }
 
   // ============================
   //  App State
   // ============================
-  let meta = loadMeta();
-  let currentMode = 'elderly'; // 'elderly' | 'admin'
+  let meta = { videos: [] };
+  let currentMode = 'login'; // 'login' | 'elderly' | 'admin'
+  let currentUser = null;
   let titleClickCount = 0;
   let titleClickTimer = null;
   const TITLE_CLICK_THRESHOLD = 5;
-  const TITLE_CLICK_WINDOW = 2500; // ms
+  const TITLE_CLICK_WINDOW = 2500;
 
   let currentPlayingVideo = null;
   let playerVideoEl = null;
@@ -800,18 +734,28 @@ html, body {
   //  DOM References
   // ============================
   const $ = (sel) => document.querySelector(sel);
-  const $$ = (sel) => document.querySelectorAll(sel);
+
+  const loginView = $('#loginView');
+  const loginEmail = $('#loginEmail');
+  const loginPassword = $('#loginPassword');
+  const loginError = $('#loginError');
+  const loginBtn = $('#loginBtn');
+  const showSignupLink = $('#showSignupLink');
+  const skipLoginLink = $('#skipLoginLink');
 
   const elderlyView = $('#elderlyView');
-  const adminView = $('#adminView');
   const elderlyTitle = $('#elderlyTitle');
   const videoCountHint = $('#videoCountHint');
   const videoList = $('#videoList');
+  const syncIndicator = $('#syncIndicator');
   const playerContainer = $('#playerContainer');
   const playerVideoWrapper = $('#playerVideoWrapper');
   const playerBackBtn = $('#playerBackBtn');
   const playerPlayPauseBtn = $('#playerPlayPauseBtn');
 
+  const adminView = $('#adminView');
+  const adminUserEmail = $('#adminUserEmail');
+  const adminLogoutBtn = $('#adminLogoutBtn');
   const adminVideoList = $('#adminVideoList');
   const emptyAdminHint = $('#emptyAdminHint');
   const addLinkBtn = $('#addLinkBtn');
@@ -822,17 +766,7 @@ html, body {
   const uploadTitleInput = $('#uploadTitle');
   const progressWrapper = $('#progressWrapper');
   const progressFill = $('#progressFill');
-  const newPasswordInput = $('#newPassword');
-  const adminSaveBtn = $('#adminSaveBtn');
-  const adminCancelBtn = $('#adminCancelBtn');
-
-  const passwordDialog = $('#passwordDialog');
-  const dialogTitle = $('#dialogTitle');
-  const dialogMsg = $('#dialogMsg');
-  const dialogPassword = $('#dialogPassword');
-  const dialogError = $('#dialogError');
-  const dialogConfirmBtn = $('#dialogConfirmBtn');
-  const dialogCancelBtn = $('#dialogCancelBtn');
+  const adminDoneBtn = $('#adminDoneBtn');
 
   const toast = $('#toast');
 
@@ -851,12 +785,147 @@ html, body {
   }
 
   // ============================
+  //  Auth
+  // ============================
+  let signupMode = false;
+
+  async function doLogin() {
+    const email = loginEmail.value.trim();
+    const password = loginPassword.value.trim();
+
+    if (!email) { loginError.textContent = '请输入邮箱地址'; return; }
+    if (!password) { loginError.textContent = '请输入密码'; return; }
+    if (password.length < 6) { loginError.textContent = '密码至少6位'; return; }
+
+    loginBtn.disabled = true;
+    loginError.textContent = '';
+
+    try {
+      if (signupMode) {
+        // Sign up
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { emailRedirectTo: window.location.href }
+        });
+        if (error) throw error;
+        if (data.user) {
+          showToast('✅ 账号创建成功！');
+          signupMode = false;
+          // Auto-login after signup (user might need email confirmation if enabled)
+          loginError.textContent = '';
+          showSignupLink.textContent = '首次使用？创建账号';
+        }
+      }
+
+      // Sign in
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+
+      currentUser = data.user;
+      onLoginSuccess();
+    } catch(err) {
+      loginError.textContent = getAuthErrorMessage(err);
+    } finally {
+      loginBtn.disabled = false;
+    }
+  }
+
+  function getAuthErrorMessage(err) {
+    const msg = err.message || String(err);
+    if (msg.includes('Invalid login credentials') || msg.includes('Invalid Login'))
+      return '邮箱或密码错误，请重试';
+    if (msg.includes('Email not confirmed'))
+      return '邮箱尚未验证，请先确认邮箱';
+    if (msg.includes('User already registered') || msg.includes('already been registered'))
+      return '该邮箱已注册，请直接登录';
+    if (msg.includes('password') && msg.includes('weak'))
+      return '密码太弱，请使用6位以上密码';
+    if (msg.includes('valid email'))
+      return '请输入有效的邮箱地址';
+    if (msg.includes('rate') || msg.includes('limit'))
+      return '请求太频繁，请稍后再试';
+    if (msg.includes('network') || msg.includes('fetch'))
+      return '网络连接失败，请检查网络';
+    return `登录失败：${msg}`;
+  }
+
+  async function onLoginSuccess() {
+    loginError.textContent = '';
+    loginPassword.value = '';
+    loginBtn.disabled = false;
+
+    try {
+      // Load videos from Supabase
+      meta.videos = await loadVideosFromSupabase();
+    } catch(e) {
+      console.warn('Failed to load videos from Supabase, using empty list:', e);
+      meta.videos = [];
+    }
+
+    // Subscribe to real-time changes
+    subscribeToChanges();
+
+    // Show elderly view
+    switchToElderly();
+  }
+
+  async function doLogout() {
+    if (!confirm('确定要退出登录吗？\n退出后无法自动同步视频列表。')) return;
+
+    unsubscribeFromChanges();
+    await supabase.auth.signOut();
+    currentUser = null;
+    meta.videos = [];
+    switchToLogin();
+  }
+
+  // ============================
+  //  View Switching
+  // ============================
+  function switchToLogin() {
+    currentMode = 'login';
+    loginView.classList.add('active');
+    elderlyView.classList.remove('active');
+    adminView.classList.remove('active');
+    closePlayer();
+    loginEmail.value = currentUser ? currentUser.email : '';
+    // If user has an active session, try to restore
+    if (currentUser) {
+      loginError.textContent = '';
+    }
+  }
+
+  function switchToElderly() {
+    currentMode = 'elderly';
+    loginView.classList.remove('active');
+    elderlyView.classList.add('active');
+    adminView.classList.remove('active');
+    closePlayer();
+    renderElderlyList(meta.videos);
+  }
+
+  function switchToAdmin() {
+    if (!currentUser) {
+      showToast('请先登录');
+      switchToLogin();
+      return;
+    }
+    currentMode = 'admin';
+    elderlyView.classList.remove('active');
+    adminView.classList.add('active');
+    closePlayer();
+    adminUserEmail.textContent = '👤 ' + currentUser.email;
+    renderAdminList(meta.videos);
+  }
+
+  // ============================
   //  Elderly Mode: Render Video List
   // ============================
-  function renderElderlyList() {
-    const videos = meta.videos.sort((a, b) => a.order - b.order);
+  function renderElderlyList(videos) {
+    const sorted = (videos || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
 
-    if (videos.length === 0) {
+    if (sorted.length === 0) {
       videoCountHint.textContent = '';
       videoList.innerHTML = `
         <div class="empty-state">
@@ -866,8 +935,8 @@ html, body {
       return;
     }
 
-    videoCountHint.textContent = `共 ${videos.length} 个视频`;
-    videoList.innerHTML = videos.map((v, i) => `
+    videoCountHint.textContent = `共 ${sorted.length} 个视频`;
+    videoList.innerHTML = sorted.map((v, i) => `
       <div class="video-card" data-video-id="${v.id}" data-index="${i}">
         <div class="card-icon">🎬</div>
         <div class="card-info">
@@ -878,7 +947,6 @@ html, body {
       </div>
     `).join('');
 
-    // Bind click events
     videoList.querySelectorAll('.video-card').forEach(card => {
       card.addEventListener('click', () => {
         const vid = card.dataset.videoId;
@@ -890,16 +958,8 @@ html, body {
 
   function escapeHtml(str) {
     const div = document.createElement('div');
-    div.textContent = str;
+    div.textContent = str || '';
     return div.innerHTML;
-  }
-
-  function getVideoTypeLabel(v) {
-    if (v.type === 'local') return '本地视频';
-    if (isBilibiliUrl(v.source)) return 'B站视频';
-    if (isYouTubeUrl(v.source)) return 'YouTube';
-    if (isDirectVideoUrl(v.source)) return '在线视频';
-    return `${getPlatformName(v.source)}视频`;
   }
 
   // ============================
@@ -911,11 +971,9 @@ html, body {
     playerVideoEl = null;
     isPlaying = false;
     playerPlayPauseBtn.textContent = '▶️';
-
     playerContainer.classList.add('active');
 
     if (video.type === 'local') {
-      // Load blob from IndexedDB
       try {
         showToast('正在加载视频...', 1500);
         const blob = await idbGet(video.localId);
@@ -926,23 +984,17 @@ html, body {
         const url = URL.createObjectURL(blob);
         createVideoElement(url);
       } catch(e) {
-        console.error('Failed to load local video:', e);
         playerVideoWrapper.innerHTML = `<div class="unsupported-hint">视频加载失败 😢</div>`;
       }
     } else if (video.type === 'link') {
       const src = video.source;
-
       if (isBilibiliUrl(src)) {
-        // Bilibili embed
         const bvid = extractBvid(src);
         if (bvid) {
           playerVideoWrapper.innerHTML = `
-            <iframe
-              src="https://player.bilibili.com/player.html?bvid=${bvid}&high_quality=1&autoplay=1"
-              allowfullscreen
-              allow="autoplay; fullscreen"
-              sandbox="allow-scripts allow-same-origin allow-presentation"
-            ></iframe>`;
+            <iframe src="https://player.bilibili.com/player.html?bvid=${bvid}&high_quality=1&autoplay=1"
+              allowfullscreen allow="autoplay; fullscreen"
+              sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>`;
           isPlaying = true;
           playerPlayPauseBtn.textContent = '⏸️';
         } else {
@@ -953,11 +1005,8 @@ html, body {
         const videoId = extractYouTubeId(src);
         if (videoId) {
           playerVideoWrapper.innerHTML = `
-            <iframe
-              src="https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1"
-              allowfullscreen
-              allow="autoplay; fullscreen; picture-in-picture"
-            ></iframe>`;
+            <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1"
+              allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
           isPlaying = true;
           playerPlayPauseBtn.textContent = '⏸️';
         } else {
@@ -965,10 +1014,8 @@ html, body {
           playerPlayPauseBtn.textContent = '👆';
         }
       } else if (isDirectVideoUrl(src)) {
-        // 真正的视频文件直链，用 <video> 播放
         createVideoElement(src);
       } else {
-        // 社交媒体/平台链接，只能外部打开
         showExternalLinkView(src);
         playerPlayPauseBtn.textContent = '👆';
       }
@@ -979,36 +1026,29 @@ html, body {
     playerVideoWrapper.innerHTML = '';
     const video = document.createElement('video');
     video.src = src;
-    video.controls = false; // We use our own controls
+    video.controls = false;
     video.playsInline = true;
     video.style.cssText = 'width:100%;height:100%;object-fit:contain;';
     video.setAttribute('playsinline', '');
-
-    // Auto play
     video.play().then(() => {
       isPlaying = true;
       playerPlayPauseBtn.textContent = '⏸️';
     }).catch(() => {
-      // Autoplay blocked, show play button
       isPlaying = false;
       playerPlayPauseBtn.textContent = '▶️';
     });
-
     video.addEventListener('ended', () => {
       isPlaying = false;
       playerPlayPauseBtn.textContent = '🔄';
     });
-
     video.addEventListener('play', () => {
       isPlaying = true;
       playerPlayPauseBtn.textContent = '⏸️';
     });
-
     video.addEventListener('pause', () => {
       isPlaying = false;
       playerPlayPauseBtn.textContent = '▶️';
     });
-
     playerVideoWrapper.appendChild(video);
     playerVideoEl = video;
   }
@@ -1016,10 +1056,7 @@ html, body {
   function showExternalLinkView(url) {
     const isWeChat = isWeChatVideoUrl(url);
     const platformName = getPlatformName(url);
-    const domain = new URL(url).hostname.replace('www.', '');
-
     if (isWeChat) {
-      // 微信视频号无法在浏览器播放，显示友好提示
       playerVideoWrapper.innerHTML = `
         <div class="unsupported-hint">
           <div style="font-size:56px;margin-bottom:16px;">💬</div>
@@ -1037,9 +1074,9 @@ html, body {
         <div class="unsupported-hint">
           <div style="font-size:56px;margin-bottom:16px;">📺</div>
           <p style="font-size:var(--font-lg);font-weight:600;color:#fff;margin-bottom:8px;">${escapeHtml(platformName)} 视频</p>
-          <p style="color:rgba(255,255,255,0.6);font-size:var(--font-sm);margin-bottom:20px;">${escapeHtml(domain)}</p>
-          <p style="color:rgba(255,255,255,0.8);font-size:var(--font-md);margin-bottom:28px;">在 ${escapeHtml(platformName)} App 或浏览器中观看</p>
-          <a class="btn btn-primary" href="${escapeHtml(url)}" target="_blank" rel="noopener" style="font-size:var(--font-lg);padding:20px 48px;text-decoration:none;display:inline-block;">
+          <p style="color:rgba(255,255,255,0.6);font-size:var(--font-sm);margin-bottom:20px;">需在 ${escapeHtml(platformName)} App 中观看</p>
+          <a class="btn btn-primary" href="${escapeHtml(url)}" target="_blank" rel="noopener"
+             style="font-size:var(--font-lg);padding:20px 48px;text-decoration:none;display:inline-block;">
             👆 点这里打开视频
           </a>
           <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin-top:20px;">打开后如要返回，请切换回浏览器</p>
@@ -1063,44 +1100,28 @@ html, body {
 
   function togglePlayPause() {
     if (!currentPlayingVideo) return;
-
-    // For iframes (B站/YouTube), we can't control playback
     const iframe = playerVideoWrapper.querySelector('iframe');
     if (iframe) {
       showToast('在线视频无法在此暂停，请点击视频内部控制');
       return;
     }
-
-    // For external links (社交平台), open the link
     const extLink = playerVideoWrapper.querySelector('.unsupported-hint a');
     if (extLink && currentPlayingVideo.type === 'link') {
       extLink.click();
       return;
     }
-
     if (playerVideoEl) {
-      if (isPlaying) {
-        playerVideoEl.pause();
-      } else {
-        playerVideoEl.play().catch(() => {});
-      }
+      if (isPlaying) { playerVideoEl.pause(); }
+      else { playerVideoEl.play().catch(() => {}); }
     }
   }
 
-  // URL detection helpers
-  function isBilibiliUrl(url) {
-    return /bilibili\.com/i.test(url);
-  }
-
-  function extractBvid(url) {
-    const m = url.match(/BV[a-zA-Z0-9]+/);
-    return m ? m[0] : null;
-  }
-
-  function isYouTubeUrl(url) {
-    return /(youtube\.com|youtu\.be)/i.test(url);
-  }
-
+  // ============================
+  //  URL Detection Helpers
+  // ============================
+  function isBilibiliUrl(url) { return /bilibili\.com/i.test(url); }
+  function extractBvid(url) { const m = url.match(/BV[a-zA-Z0-9]+/); return m ? m[0] : null; }
+  function isYouTubeUrl(url) { return /(youtube\.com|youtu\.be)/i.test(url); }
   function extractYouTubeId(url) {
     const patterns = [
       /[?&]v=([a-zA-Z0-9_-]{11})/,
@@ -1114,47 +1135,25 @@ html, body {
     }
     return null;
   }
-
-  // 检测是否为可直接播放的视频文件地址
   function isDirectVideoUrl(url) {
     try {
       const pathname = new URL(url).pathname.toLowerCase();
       return /\.(mp4|m3u8|webm|ogg|mov|mkv|avi|ts|flv)(\?|#|$)/.test(pathname)
           || /\.(mp4|m3u8|webm|ogg|mov|mkv|avi|ts|flv)$/.test(pathname);
-    } catch(e) {
-      return false;
-    }
+    } catch(e) { return false; }
   }
-
-  // 检测是否为社交媒体/平台链接（无法嵌入播放）
   function isSocialPlatformUrl(url) {
     const platforms = [
-      /channels\.weixin\.qq\.com/i,    // 微信视频号
-      /finder\.video\.qq\.com/i,        // 微信视频号(旧)
-      /weixin\.qq\.com/i,               // 微信
-      /douyin\.com/i,                   // 抖音
-      /kuaishou\.com/i,                 // 快手
-      /xiaohongshu\.com/i,              // 小红书
-      /xhslink\.com/i,                  // 小红书短链
-      /weibo\.com/i,                    // 微博
-      /weibo\.cn/i,                     // 微博短链
-      /zhihu\.com/i,                    // 知乎
-      /ixigua\.com/i,                   // 西瓜视频
-      /haokan\.baidu\.com/i,            // 好看视频
-      /v\.qq\.com/i,                    // 腾讯视频
-      /iqiyi\.com/i,                    // 爱奇艺
-      /youku\.com/i,                    // 优酷
-      /mgtv\.com/i,                     // 芒果TV
+      /channels\.weixin\.qq\.com/i, /finder\.video\.qq\.com/i, /weixin\.qq\.com/i,
+      /douyin\.com/i, /kuaishou\.com/i, /xiaohongshu\.com/i, /xhslink\.com/i,
+      /weibo\.com/i, /weibo\.cn/i, /zhihu\.com/i, /ixigua\.com/i,
+      /haokan\.baidu\.com/i, /v\.qq\.com/i, /iqiyi\.com/i, /youku\.com/i, /mgtv\.com/i,
     ];
     return platforms.some(p => p.test(url));
   }
-
-  // 检测是否为微信视频号链接（浏览器无法播放）
   function isWeChatVideoUrl(url) {
     return /channels\.weixin\.qq\.com|finder\.video\.qq\.com|weixin\.qq\.com/i.test(url);
   }
-
-  // 获取平台中文名称
   function getPlatformName(url) {
     if (isWeChatVideoUrl(url)) return '微信视频号';
     if (/douyin\.com/i.test(url)) return '抖音';
@@ -1170,128 +1169,26 @@ html, body {
     if (/mgtv\.com/i.test(url)) return '芒果TV';
     return '该平台';
   }
-
-  // Player event bindings
-  playerBackBtn.addEventListener('click', closePlayer);
-  playerPlayPauseBtn.addEventListener('click', togglePlayPause);
-
-  // ============================
-  //  Admin Entry: 5-click on title
-  // ============================
-  elderlyTitle.addEventListener('click', () => {
-    titleClickCount++;
-    if (titleClickCount === 1) {
-      titleClickTimer = setTimeout(() => {
-        titleClickCount = 0;
-      }, TITLE_CLICK_WINDOW);
-    }
-    if (titleClickCount >= TITLE_CLICK_THRESHOLD) {
-      titleClickCount = 0;
-      if (titleClickTimer) clearTimeout(titleClickTimer);
-      showPasswordDialog();
-    }
-  });
-
-  function showPasswordDialog() {
-    dialogPassword.value = '';
-    dialogError.textContent = '';
-
-    if (!meta.adminPassword) {
-      // First time setup
-      dialogTitle.textContent = '🔐 设置管理密码';
-      dialogMsg.textContent = '首次使用，请设置一个简单密码';
-      dialogConfirmBtn.textContent = '设置密码';
-      dialogConfirmBtn.dataset.mode = 'setup';
-    } else {
-      dialogTitle.textContent = '🔐 进入管理模式';
-      dialogMsg.textContent = '输入管理密码';
-      dialogConfirmBtn.textContent = '确认';
-      dialogConfirmBtn.dataset.mode = 'verify';
-    }
-
-    passwordDialog.classList.add('active');
-    setTimeout(() => dialogPassword.focus(), 300);
-  }
-
-  function hidePasswordDialog() {
-    passwordDialog.classList.remove('active');
-    dialogPassword.value = '';
-    dialogError.textContent = '';
-  }
-
-  dialogConfirmBtn.addEventListener('click', () => {
-    const pwd = dialogPassword.value.trim();
-    const mode = dialogConfirmBtn.dataset.mode;
-
-    if (mode === 'setup') {
-      if (pwd.length < 4) {
-        dialogError.textContent = '密码至少4位数字哦～';
-        return;
-      }
-      meta.adminPassword = pwd;
-      saveMeta(meta);
-      hidePasswordDialog();
-      showToast('✅ 密码设置成功！');
-      switchToAdmin();
-    } else {
-      if (pwd === meta.adminPassword) {
-        hidePasswordDialog();
-        switchToAdmin();
-      } else {
-        dialogError.textContent = '密码不对，再试一次～';
-        dialogPassword.value = '';
-        dialogPassword.focus();
-      }
-    }
-  });
-
-  dialogCancelBtn.addEventListener('click', hidePasswordDialog);
-  passwordDialog.addEventListener('click', (e) => {
-    if (e.target === passwordDialog) hidePasswordDialog();
-  });
-
-  // Keyboard support
-  dialogPassword.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') dialogConfirmBtn.click();
-    if (e.key === 'Escape') hidePasswordDialog();
-  });
-
-  // ============================
-  //  Mode Switching
-  // ============================
-  function switchToAdmin() {
-    currentMode = 'admin';
-    elderlyView.classList.remove('active');
-    adminView.classList.add('active');
-    closePlayer();
-    renderAdminList();
-  }
-
-  function switchToElderly(saveChanges = false) {
-    if (saveChanges) {
-      saveMeta(meta);
-    } else {
-      // Discard changes: reload from storage
-      meta = loadMeta();
-    }
-    currentMode = 'elderly';
-    adminView.classList.remove('active');
-    elderlyView.classList.add('active');
-    renderElderlyList();
+  function getVideoTypeLabel(v) {
+    if (v.type === 'local') return '本地视频';
+    if (isBilibiliUrl(v.source)) return 'B站视频';
+    if (isYouTubeUrl(v.source)) return 'YouTube';
+    if (isDirectVideoUrl(v.source)) return '在线视频';
+    return `${getPlatformName(v.source)}视频`;
   }
 
   // ============================
   //  Admin Mode: Render
   // ============================
-  function renderAdminList() {
-    const videos = meta.videos.sort((a, b) => a.order - b.order);
+  function renderAdminList(videos) {
+    const sorted = (videos || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
 
-    if (videos.length === 0) {
+    if (sorted.length === 0) {
       emptyAdminHint.style.display = 'block';
       adminVideoList.innerHTML = '';
     } else {
       emptyAdminHint.style.display = 'none';
-      adminVideoList.innerHTML = videos.map((v, i) => `
+      adminVideoList.innerHTML = sorted.map((v, i) => `
         <div class="admin-video-item" data-video-id="${v.id}" draggable="true">
           <span class="drag-handle">☰</span>
           <span style="font-size:24px;flex-shrink:0">${v.type === 'local' ? '📁' : '🔗'}</span>
@@ -1306,19 +1203,10 @@ html, body {
         </div>
       `).join('');
 
-      // Bind delete buttons
       adminVideoList.querySelectorAll('.item-delete').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const vid = btn.dataset.deleteId;
-          deleteVideo(vid);
-        });
+        btn.addEventListener('click', (e) => { e.stopPropagation(); deleteVideo(btn.dataset.deleteId); });
       });
-
-      // Bind drag events for reordering
       bindDragEvents();
-
-      // Async check for missing local video blobs
       checkMissingLocalBlobs();
     }
   }
@@ -1338,39 +1226,28 @@ html, body {
       try {
         const blob = await idbGet(v.localId);
         if (!blob) {
-          // Show warning on this item
           const item = adminVideoList.querySelector(`[data-video-id="${v.id}"]`);
           if (item) {
             const warning = item.querySelector('.item-blob-warning');
             if (warning) warning.style.display = 'inline';
           }
         }
-      } catch(e) {
-        // IDB error — also show warning
-        const item = adminVideoList.querySelector(`[data-video-id="${v.id}"]`);
-        if (item) {
-          const warning = item.querySelector('.item-blob-warning');
-          if (warning) warning.style.display = 'inline';
-        }
-      }
+      } catch(e) {}
     }
   }
 
   function bindDragEvents() {
     const items = adminVideoList.querySelectorAll('.admin-video-item');
     let draggedItem = null;
-
     items.forEach(item => {
       item.addEventListener('dragstart', (e) => {
         draggedItem = item;
         item.style.opacity = '0.5';
         e.dataTransfer.effectAllowed = 'move';
       });
-
       item.addEventListener('dragend', (e) => {
         item.style.opacity = '1';
         draggedItem = null;
-        // Recalculate order based on DOM position
         const currentItems = adminVideoList.querySelectorAll('.admin-video-item');
         currentItems.forEach((el, idx) => {
           const vid = el.dataset.videoId;
@@ -1378,7 +1255,6 @@ html, body {
           if (video) video.order = idx;
         });
       });
-
       item.addEventListener('dragover', (e) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
@@ -1392,10 +1268,7 @@ html, body {
           }
         }
       });
-
-      item.addEventListener('drop', (e) => {
-        e.preventDefault();
-      });
+      item.addEventListener('drop', (e) => { e.preventDefault(); });
     });
   }
 
@@ -1405,83 +1278,78 @@ html, body {
   async function deleteVideo(vid) {
     const video = meta.videos.find(v => v.id === vid);
     if (!video) return;
-
-    // Confirm
     if (!confirm(`确定要删除「${video.title}」吗？\n删除后无法恢复。`)) return;
 
-    // If local video, delete from IndexedDB
     if (video.type === 'local' && video.localId) {
-      try {
-        await idbDelete(video.localId);
-      } catch(e) {
-        console.error('Failed to delete from IDB:', e);
-      }
+      try { await idbDelete(video.localId); } catch(e) {}
     }
 
-    // Remove from meta
     meta.videos = meta.videos.filter(v => v.id !== vid);
-    saveMeta(meta);
-    renderAdminList();
+
+    // Sync to Supabase
+    try {
+      showSyncIndicator('syncing');
+      await deleteVideoFromSupabase(vid);
+      showSyncIndicator('已同步');
+    } catch(e) {
+      showToast('⚠️ 云端同步失败，请检查网络');
+    }
+
+    renderAdminList(meta.videos);
     showToast('✅ 已删除');
   }
 
-  addLinkBtn.addEventListener('click', () => {
+  addLinkBtn.addEventListener('click', async () => {
     const title = linkTitleInput.value.trim();
     const url = linkUrlInput.value.trim();
-
     if (!title) { showToast('请填写视频名称'); return; }
     if (!url) { showToast('请填写视频地址'); return; }
+    try { new URL(url); } catch(e) { showToast('请输入有效的网址'); return; }
 
-    try { new URL(url); } catch(e) {
-      showToast('请输入有效的网址');
-      return;
-    }
-
-    meta.videos.push({
+    const video = {
       id: generateId(),
       title: title,
       type: 'link',
       source: url,
       order: meta.videos.length
-    });
+    };
 
-    saveMeta(meta);
+    meta.videos.push(video);
+
+    try {
+      showSyncIndicator('syncing');
+      await saveVideoToSupabase(video);
+      showSyncIndicator('已同步');
+    } catch(e) {
+      showToast('⚠️ 云端同步失败，视频仅在本地保存');
+    }
+
     linkTitleInput.value = '';
     linkUrlInput.value = '';
-    renderAdminList();
+    renderAdminList(meta.videos);
     showToast('✅ 视频链接已添加！');
   });
 
-  uploadBtn.addEventListener('click', () => {
-    fileInput.click();
-  });
+  uploadBtn.addEventListener('click', () => { fileInput.click(); });
 
   fileInput.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     const title = uploadTitleInput.value.trim() || file.name.replace(/\.[^.]+$/, '');
 
-    // Show progress
     progressWrapper.style.display = 'block';
     progressFill.style.width = '0%';
 
     try {
-      // Simulate progress
       progressFill.style.width = '30%';
       await sleep(200);
-
-      // Read file as ArrayBuffer for progress tracking
       const blob = await readFileAsBlob(file);
       progressFill.style.width = '70%';
-
-      // Store in IndexedDB
       const localId = generateId();
       await idbPut(localId, blob);
       progressFill.style.width = '100%';
 
-      // Add to meta
-      meta.videos.push({
+      const video = {
         id: generateId(),
         title: title,
         type: 'local',
@@ -1489,19 +1357,27 @@ html, body {
         fileName: file.name,
         fileSize: file.size,
         order: meta.videos.length
-      });
+      };
 
-      saveMeta(meta);
+      meta.videos.push(video);
+
+      // Sync metadata to Supabase (blob stays local)
+      try {
+        showSyncIndicator('syncing');
+        await saveVideoToSupabase(video);
+        showSyncIndicator('已同步');
+      } catch(err) {
+        showToast('⚠️ 视频元数据同步失败，仅本地保存');
+      }
+
       await sleep(300);
-
       progressWrapper.style.display = 'none';
       progressFill.style.width = '0%';
       uploadTitleInput.value = '';
       fileInput.value = '';
-      renderAdminList();
+      renderAdminList(meta.videos);
       showToast('✅ 视频上传成功！');
     } catch(err) {
-      console.error('Upload failed:', err);
       progressWrapper.style.display = 'none';
       progressFill.style.width = '0%';
       showToast('❌ 上传失败，请重试');
@@ -1510,51 +1386,97 @@ html, body {
 
   function readFileAsBlob(file) {
     return new Promise((resolve, reject) => {
-      // For large files, we can store as-is since File extends Blob
-      // But we create a proper Blob copy to avoid reference issues
-      try {
-        const blob = new Blob([file], { type: file.type });
-        resolve(blob);
-      } catch(e) {
-        reject(e);
-      }
+      try { resolve(new Blob([file], { type: file.type })); }
+      catch(e) { reject(e); }
     });
   }
 
-  function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+  function generateId() {
+    return 'v_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
   }
 
-  // Save & Exit
-  adminSaveBtn.addEventListener('click', () => {
-    // Check password change
-    const newPwd = newPasswordInput.value.trim();
-    if (newPwd) {
-      if (newPwd.length < 4) {
-        showToast('密码至少4位数字哦～');
-        return;
-      }
-      meta.adminPassword = newPwd;
-      newPasswordInput.value = '';
+  // Done button (was Save & Exit)
+  adminDoneBtn.addEventListener('click', async () => {
+    // Sync all videos order to Supabase
+    try {
+      showSyncIndicator('syncing');
+      await saveAllVideosToSupabase(meta.videos);
+      showSyncIndicator('已同步');
+    } catch(e) {
+      showToast('⚠️ 同步失败，请检查网络');
     }
-    switchToElderly(true);
+    switchToElderly();
     showToast('✅ 已保存！');
   });
 
-  adminCancelBtn.addEventListener('click', () => {
-    newPasswordInput.value = '';
-    switchToElderly(false);
+  adminLogoutBtn.addEventListener('click', doLogout);
+
+  // ============================
+  //  Login Event Handlers
+  // ============================
+  loginBtn.addEventListener('click', doLogin);
+
+  loginPassword.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') doLogin();
+  });
+  loginEmail.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') loginPassword.focus();
+  });
+
+  showSignupLink.addEventListener('click', () => {
+    signupMode = !signupMode;
+    if (signupMode) {
+      showSignupLink.textContent = '已有账号？返回登录';
+      loginBtn.textContent = '✨ 创建账号';
+      loginError.textContent = '';
+    } else {
+      showSignupLink.textContent = '首次使用？创建账号';
+      loginBtn.textContent = '🔐 登录';
+    }
+    loginEmail.focus();
+  });
+
+  skipLoginLink.addEventListener('click', () => {
+    currentUser = null;
+    meta.videos = [];
+    switchToElderly();
+    showToast('⚠️ 离线模式，视频不会同步');
   });
 
   // ============================
-  //  Keyboard shortcuts
+  //  Admin Entry: 5-click on title
+  // ============================
+  elderlyTitle.addEventListener('click', () => {
+    titleClickCount++;
+    if (titleClickCount === 1) {
+      titleClickTimer = setTimeout(() => { titleClickCount = 0; }, TITLE_CLICK_WINDOW);
+    }
+    if (titleClickCount >= TITLE_CLICK_THRESHOLD) {
+      titleClickCount = 0;
+      if (titleClickTimer) clearTimeout(titleClickTimer);
+      if (!currentUser) {
+        showToast('请先登录再管理视频');
+      } else {
+        switchToAdmin();
+      }
+    }
+  });
+
+  // ============================
+  //  Player Events
+  // ============================
+  playerBackBtn.addEventListener('click', closePlayer);
+  playerPlayPauseBtn.addEventListener('click', togglePlayPause);
+
+  // ============================
+  //  Keyboard Shortcuts
   // ============================
   document.addEventListener('keydown', (e) => {
-    // ESC to close player
     if (e.key === 'Escape' && playerContainer.classList.contains('active')) {
       closePlayer();
     }
-    // Space to toggle play/pause in player
     if (e.key === ' ' && playerContainer.classList.contains('active')) {
       e.preventDefault();
       togglePlayPause();
@@ -1562,7 +1484,7 @@ html, body {
   });
 
   // ============================
-  //  Cleanup blob URLs on page unload
+  //  Cleanup
   // ============================
   window.addEventListener('beforeunload', () => {
     if (playerVideoEl && playerVideoEl.src.startsWith('blob:')) {
@@ -1570,9 +1492,6 @@ html, body {
     }
   });
 
-  // ============================
-  //  Handle page visibility (pause video when hidden)
-  // ============================
   document.addEventListener('visibilitychange', () => {
     if (document.hidden && playerVideoEl && isPlaying) {
       playerVideoEl.pause();
@@ -1580,16 +1499,57 @@ html, body {
   });
 
   // ============================
-  //  Initial Render
+  //  Init
   // ============================
-  renderElderlyList();
+  async function init() {
+    // Check for existing session
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (session && session.user) {
+      currentUser = session.user;
+      loginView.classList.remove('active');
+      skipLoginLink.style.display = 'none';
+
+      try {
+        meta.videos = await loadVideosFromSupabase();
+      } catch(e) {
+        console.warn('Failed to load videos:', e);
+        meta.videos = [];
+      }
+
+      subscribeToChanges();
+      switchToElderly();
+    } else {
+      // Show login view
+      loginView.classList.add('active');
+      skipLoginLink.style.display = 'inline-block';
+    }
+
+    // Listen for auth state changes
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        currentUser = null;
+        meta.videos = [];
+        unsubscribeFromChanges();
+        if (currentMode !== 'login') switchToLogin();
+      } else if (event === 'SIGNED_IN' && session) {
+        currentUser = session.user;
+        // Reload videos
+        loadVideosFromSupabase().then(v => {
+          meta.videos = v;
+          renderElderlyList(v);
+        }).catch(() => {});
+        subscribeToChanges();
+      }
+    });
+  }
+
+  init();
 
   console.log('👵💃 外婆健身操已就绪！');
-  console.log('  老年模式：大字大按钮，点击直接播放');
-  console.log('  管理模式：连续点击标题 ' + TITLE_CLICK_THRESHOLD + ' 次进入');
-  console.log('  存储引擎：localStorage + IndexedDB');
-  console.log('  已存储视频数：' + meta.videos.length);
-
+  console.log('  登录：Supabase Auth (邮箱+密码)');
+  console.log('  同步：实时数据库同步');
+  console.log('  存储：Supabase + IndexedDB (本地视频)');
 })();
 </script>
 </body>
