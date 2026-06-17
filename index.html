@@ -876,7 +876,8 @@ html, body {
     const cfg = meta.cloudConfig;
     if (!cfg || !cfg.envId) throw new Error('请先配置 CloudBase 环境 ID');
     if (!cfg.accessToken) throw new Error('请先填写 Access Token');
-    return `https://${cfg.envId}.api.tcloudbasegateway.com/v1/databases/grandma_fitness_sync/documents`;
+    // CloudBase NoSQL REST API: instances/(default)/databases/(default)/collections/{coll}/documents
+    return `https://${cfg.envId}.api.tcloudbasegateway.com/v1/database/instances/(default)/databases/(default)/collections/grandma_fitness_sync/documents`;
   }
 
   function getDeviceName() {
