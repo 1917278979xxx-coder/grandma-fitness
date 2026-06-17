@@ -672,44 +672,18 @@ html, body {
 
         <div id="syncBody" style="display:none">
 
-          <!-- CloudBase config -->
-          <details id="cloudConfigDetails" style="margin-bottom:14px">
-            <summary style="font-size:var(--font-sm);font-weight:600;color:var(--text-secondary);cursor:pointer;padding:4px 0">
-              🔧 腾讯云 CloudBase 配置 <span style="font-weight:400;color:var(--text-muted)">（点击展开）</span>
-            </summary>
-            <p style="font-size:0.8rem;color:var(--text-muted);margin:8px 0;line-height:1.6">
-              请前往 <a href="https://console.cloud.tencent.com/tcb" target="_blank" rel="noopener" style="color:var(--warm-orange)">腾讯云 CloudBase 控制台</a>
-              创建环境（选「免费体验版」），在「概览」页面复制环境 ID。
-            </p>
-            <div class="form-group">
-              <label for="cbEnvId">环境 ID</label>
-              <input class="form-input" type="text" id="cbEnvId" placeholder="grandma-fitness-xxxxxxxx" autocomplete="off" style="font-size:0.85rem">
-              <p style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">
-                在 CloudBase 控制台「概览」页面复制
-              </p>
-            </div>
-            <div class="form-group">
-              <label for="cbAccessToken">Access Token</label>
-              <input class="form-input" type="password" id="cbAccessToken" placeholder="eyJhbGci..." autocomplete="off" style="font-size:0.85rem">
-              <p style="font-size:0.7rem;color:var(--text-muted);margin-top:2px">
-                「扩展能力 → HTTP API → 访问令牌」页面复制。密码型输入框，旁人看不到
-              </p>
-            </div>
-            <p style="font-size:0.75rem;color:var(--text-secondary);margin:4px 0;line-height:1.5">
-              ⚠️ 重要：前往「环境配置 → 安全配置 → 安全域名」，添加 <code style="background:#f0e6db;padding:1px 4px;border-radius:3px">1917278979xxx-coder.github.io</code>
-            </p>
-            <button class="btn btn-secondary btn-sm" id="cbSaveConfigBtn">💾 保存配置</button>
-            <span id="cbConfigStatus" style="font-size:0.8rem;color:var(--success);margin-left:8px;display:none">✅ 已保存</span>
-          </details>
-
           <!-- Sync code -->
           <div class="form-group">
             <label for="syncCodeInput">🔑 同步码</label>
-            <input class="form-input" type="text" id="syncCodeInput"
-                   placeholder="设置一个同步码（如：grandma2024）"
-                   style="font-family:monospace;letter-spacing:2px" autocomplete="off">
-            <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">
-              所有使用相同同步码的设备之间可以同步视频列表
+            <div style="display:flex;gap:8px">
+              <input class="form-input" type="text" id="syncCodeInput"
+                     placeholder="点击右侧「生成」或输入已有同步码"
+                     style="font-family:monospace;letter-spacing:2px;flex:1" autocomplete="off">
+              <button class="btn btn-secondary btn-sm" id="genSyncCodeBtn" style="white-space:nowrap">🔄 生成新同步码</button>
+            </div>
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;line-height:1.5">
+              生成同步码后，在另一台设备输入相同的同步码即可同步。<br>
+              无需注册任何账号，同步码就是你的云端钥匙。
             </p>
           </div>
 
@@ -869,15 +843,37 @@ html, body {
   }
 
   // ============================
-  //  Cloud Sync (CloudBase HTTP REST API)
+  //  Cloud Sync (json.lighttools.net - free, no registration)
   // ============================
+  const SYNC_API = 'https://api.json.lighttools.net/json';
 
-  function getCloudApiBase() {
-    const cfg = meta.cloudConfig;
-    if (!cfg || !cfg.envId) throw new Error('请先配置 CloudBase 环境 ID');
-    if (!cfg.accessToken) throw new Error('请先填写 Access Token');
-    // CloudBase NoSQL REST API: instances/(default)/databases/(default)/collections/{coll}/documents
-    return `https://${cfg.envId}.api.tcloudbasegateway.com/v1/database/instances/(default)/databases/(default)/collections/grandma_fitness_sync/documents`;
+  function getSyncApiUrl(syncCode) {
+    return `${SYNC_API}/${encodeURIComponent(syncCode)}`;
+  }
+
+  async function generateSyncCode() {
+    showToast('🔄 正在生成同步码...', 3000);
+
+    // Initialize empty storage on lighttools
+    const resp = await fetch(SYNC_API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ _app: 'grandma-fitness', videos: [], deviceName: getDeviceName() })
+    });
+
+    if (!resp.ok) {
+      const text = await resp.text().catch(() => '');
+      throw new Error(`生成失败 (${resp.status})${text ? ': ' + text.slice(0, 100) : ''}`);
+    }
+
+    const data = await resp.json();
+    // The API returns the generated key
+    const key = data.key || data.id || data.json_key;
+    if (!key) {
+      // Fallback: try to extract from response
+      throw new Error('未能获取同步码，请重试');
+    }
+    return key;
   }
 
   function getDeviceName() {
@@ -903,15 +899,11 @@ html, body {
     if (msg.includes('Failed to fetch') || msg.includes('NetworkError') ||
         msg.includes('ERR_NAME_NOT_RESOLVED') || msg.includes('ERR_INTERNET_DISCONNECTED'))
       return '网络连接失败，请检查网络后重试';
-    if (msg.includes('401') || msg.includes('403') || msg.includes('unauthorized'))
-      return '认证失败 — 请检查 Access Token 是否正确';
-    if (msg.includes('404') || msg.includes('not found') || msg.includes('not-found'))
+    if (msg.includes('404') || msg.includes('not found'))
       return '云端数据不存在，请检查同步码是否正确';
-    if (msg.includes('429') || msg.includes('limit') || msg.includes('exceeded'))
+    if (msg.includes('429') || msg.includes('limit'))
       return '请求太频繁，请稍后再试';
-    // Our own errors pass through
-    if (msg.includes('请先配置') || msg.includes('请先填写') || msg.includes('请先设置') ||
-        msg.includes('云端没有找到数据') || msg.includes('当前处于离线'))
+    if (msg.includes('请先') || msg.includes('请设置') || msg.includes('请填写'))
       return msg;
     return `同步失败：${msg}`;
   }
@@ -930,9 +922,6 @@ html, body {
     const codeErr = validateSyncCode(syncCode);
     if (codeErr) throw new Error(codeErr);
 
-    const baseUrl = getCloudApiBase();
-    const token = meta.cloudConfig.accessToken;
-
     showToast('☁️ 正在上传...', 3000);
 
     const videoData = meta.videos.map(v => ({
@@ -946,14 +935,11 @@ html, body {
       order: v.order
     }));
 
-    const url = `${baseUrl}/${encodeURIComponent(syncCode)}`;
-    const resp = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
+    const resp = await fetch(getSyncApiUrl(syncCode), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        _app: 'grandma-fitness',
         videos: videoData,
         deviceName: getDeviceName(),
         updatedAt: new Date().toISOString()
@@ -981,22 +967,15 @@ html, body {
     const codeErr = validateSyncCode(syncCode);
     if (codeErr) throw new Error(codeErr);
 
-    const baseUrl = getCloudApiBase();
-    const token = meta.cloudConfig.accessToken;
-
     showToast('☁️ 正在下载...', 3000);
 
-    const url = `${baseUrl}/${encodeURIComponent(syncCode)}`;
-    const resp = await fetch(url, {
+    const resp = await fetch(getSyncApiUrl(syncCode), {
       method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+      headers: { 'Content-Type': 'application/json' }
     });
 
     if (resp.status === 404) {
-      throw new Error('云端没有找到数据，请先上传或检查同步码');
+      throw new Error('云端没有找到数据，请检查同步码是否正确');
     }
     if (!resp.ok) {
       const text = await resp.text().catch(() => '');
@@ -1050,11 +1029,6 @@ html, body {
   }
 
   function populateSyncConfigFields() {
-    const cfg = meta.cloudConfig;
-    if (cfg) {
-      cbEnvId.value = cfg.envId || '';
-      cbAccessToken.value = cfg.accessToken || '';
-    }
     syncCodeInput.value = meta.syncCode || '';
     updateSyncStatus();
   }
@@ -1107,10 +1081,7 @@ html, body {
   const syncSectionHeader = $('#syncSectionHeader');
   const syncBody = $('#syncBody');
   const syncExpandHint = $('#syncExpandHint');
-  const cbEnvId = $('#cbEnvId');
-  const cbAccessToken = $('#cbAccessToken');
-  const cbSaveConfigBtn = $('#cbSaveConfigBtn');
-  const cbConfigStatus = $('#cbConfigStatus');
+  const genSyncCodeBtn = $('#genSyncCodeBtn');
   const syncCodeInput = $('#syncCodeInput');
   const syncPushBtn = $('#syncPushBtn');
   const syncPullBtn = $('#syncPullBtn');
@@ -1852,16 +1823,31 @@ html, body {
     }
   });
 
-  // Save CloudBase config
-  cbSaveConfigBtn.addEventListener('click', () => {
-    meta.cloudConfig = {
-      envId: cbEnvId.value.trim(),
-      accessToken: cbAccessToken.value.trim()
-    };
+  // Generate sync code
+  genSyncCodeBtn.addEventListener('click', async () => {
+    genSyncCodeBtn.disabled = true;
+    try {
+      const key = await generateSyncCode();
+      meta.syncCode = key;
+      saveMeta(meta);
+      syncCodeInput.value = key;
+      updateSyncStatus();
+      showToast('✅ 同步码已生成！记下它，在其他设备输入即可同步', 4000);
+    } catch(err) {
+      console.error('Generate sync code failed:', err);
+      showToast(`❌ ${getSyncErrorMessage(err)}`, 4000);
+    } finally {
+      genSyncCodeBtn.disabled = false;
+    }
+  });
+
+  // Save config (migrated to be trigger on sync code change)
+  syncCodeInput.addEventListener('change', () => {
+    const code = syncCodeInput.value.trim();
+    if (!code) return;
+    meta.syncCode = code;
     saveMeta(meta);
-    cbConfigStatus.style.display = 'inline';
-    setTimeout(() => { cbConfigStatus.style.display = 'none'; }, 2000);
-    showToast('✅ 云端配置已保存');
+    updateSyncStatus();
   });
 
   // Push to cloud
