@@ -873,7 +873,7 @@ html, body {
         <div class="card-icon">🎬</div>
         <div class="card-info">
           <div class="card-title">${escapeHtml(v.title)}</div>
-          <div class="card-duration">${v.type === 'local' ? '本地视频' : '在线视频'}</div>
+          <div class="card-duration">${getVideoTypeLabel(v)}</div>
         </div>
         <div class="card-arrow">▸</div>
       </div>
@@ -893,6 +893,14 @@ html, body {
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  }
+
+  function getVideoTypeLabel(v) {
+    if (v.type === 'local') return '本地视频';
+    if (isBilibiliUrl(v.source)) return 'B站视频';
+    if (isYouTubeUrl(v.source)) return 'YouTube';
+    if (isDirectVideoUrl(v.source)) return '在线视频';
+    return `${getPlatformName(v.source)}视频`;
   }
 
   // ============================
@@ -939,7 +947,8 @@ html, body {
           isPlaying = true;
           playerPlayPauseBtn.textContent = '⏸️';
         } else {
-          showDirectLink(src);
+          showExternalLinkView(src);
+          playerPlayPauseBtn.textContent = '👆';
         }
       } else if (isYouTubeUrl(src)) {
         const videoId = extractYouTubeId(src);
@@ -953,11 +962,16 @@ html, body {
           isPlaying = true;
           playerPlayPauseBtn.textContent = '⏸️';
         } else {
-          showDirectLink(src);
+          showExternalLinkView(src);
+          playerPlayPauseBtn.textContent = '👆';
         }
-      } else {
-        // Direct video URL
+      } else if (isDirectVideoUrl(src)) {
+        // 真正的视频文件直链，用 <video> 播放
         createVideoElement(src);
+      } else {
+        // 社交媒体/平台链接，只能外部打开
+        showExternalLinkView(src);
+        playerPlayPauseBtn.textContent = '👆';
       }
     }
   }
@@ -1000,11 +1014,19 @@ html, body {
     playerVideoEl = video;
   }
 
-  function showDirectLink(url) {
+  function showExternalLinkView(url) {
+    const platformName = getPlatformName(url);
+    const domain = new URL(url).hostname.replace('www.', '');
     playerVideoWrapper.innerHTML = `
       <div class="unsupported-hint">
-        <p>点击下方按钮打开视频</p>
-        <a href="${escapeHtml(url)}" target="_blank" rel="noopener">📺 打开视频</a>
+        <div style="font-size:56px;margin-bottom:16px;">📺</div>
+        <p style="font-size:var(--font-lg);font-weight:600;color:#fff;margin-bottom:8px;">${escapeHtml(platformName)} 视频</p>
+        <p style="color:rgba(255,255,255,0.6);font-size:var(--font-sm);margin-bottom:20px;">${escapeHtml(domain)}</p>
+        <p style="color:rgba(255,255,255,0.8);font-size:var(--font-md);margin-bottom:28px;">在 ${escapeHtml(platformName)} App 或浏览器中观看</p>
+        <a class="btn btn-primary" href="${escapeHtml(url)}" target="_blank" rel="noopener" style="font-size:var(--font-lg);padding:20px 48px;text-decoration:none;display:inline-block;">
+          👆 点这里打开视频
+        </a>
+        <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin-top:20px;">打开后如要返回，请切换回浏览器</p>
       </div>`;
   }
 
@@ -1025,11 +1047,17 @@ html, body {
   function togglePlayPause() {
     if (!currentPlayingVideo) return;
 
-    // For iframes, we can't control playback
+    // For iframes (B站/YouTube), we can't control playback
     const iframe = playerVideoWrapper.querySelector('iframe');
     if (iframe) {
-      // Can't pause iframe - show hint
       showToast('在线视频无法在此暂停，请点击视频内部控制');
+      return;
+    }
+
+    // For external links (社交平台), open the link
+    const extLink = playerVideoWrapper.querySelector('.unsupported-hint a');
+    if (extLink && currentPlayingVideo.type === 'link') {
+      extLink.click();
       return;
     }
 
@@ -1068,6 +1096,57 @@ html, body {
       if (m) return m[1];
     }
     return null;
+  }
+
+  // 检测是否为可直接播放的视频文件地址
+  function isDirectVideoUrl(url) {
+    try {
+      const pathname = new URL(url).pathname.toLowerCase();
+      return /\.(mp4|m3u8|webm|ogg|mov|mkv|avi|ts|flv)(\?|#|$)/.test(pathname)
+          || /\.(mp4|m3u8|webm|ogg|mov|mkv|avi|ts|flv)$/.test(pathname);
+    } catch(e) {
+      return false;
+    }
+  }
+
+  // 检测是否为社交媒体/平台链接（无法嵌入播放）
+  function isSocialPlatformUrl(url) {
+    const platforms = [
+      /channels\.weixin\.qq\.com/i,    // 微信视频号
+      /finder\.video\.qq\.com/i,        // 微信视频号(旧)
+      /weixin\.qq\.com/i,               // 微信
+      /douyin\.com/i,                   // 抖音
+      /kuaishou\.com/i,                 // 快手
+      /xiaohongshu\.com/i,              // 小红书
+      /xhslink\.com/i,                  // 小红书短链
+      /weibo\.com/i,                    // 微博
+      /weibo\.cn/i,                     // 微博短链
+      /zhihu\.com/i,                    // 知乎
+      /ixigua\.com/i,                   // 西瓜视频
+      /haokan\.baidu\.com/i,            // 好看视频
+      /v\.qq\.com/i,                    // 腾讯视频
+      /iqiyi\.com/i,                    // 爱奇艺
+      /youku\.com/i,                    // 优酷
+      /mgtv\.com/i,                     // 芒果TV
+    ];
+    return platforms.some(p => p.test(url));
+  }
+
+  // 获取平台中文名称
+  function getPlatformName(url) {
+    if (/channels\.weixin\.qq\.com|finder\.video\.qq\.com|weixin\.qq\.com/i.test(url)) return '微信视频号';
+    if (/douyin\.com/i.test(url)) return '抖音';
+    if (/kuaishou\.com/i.test(url)) return '快手';
+    if (/xiaohongshu\.com|xhslink\.com/i.test(url)) return '小红书';
+    if (/weibo\.com|weibo\.cn/i.test(url)) return '微博';
+    if (/zhihu\.com/i.test(url)) return '知乎';
+    if (/ixigua\.com/i.test(url)) return '西瓜视频';
+    if (/haokan\.baidu\.com/i.test(url)) return '好看视频';
+    if (/v\.qq\.com/i.test(url)) return '腾讯视频';
+    if (/iqiyi\.com/i.test(url)) return '爱奇艺';
+    if (/youku\.com/i.test(url)) return '优酷';
+    if (/mgtv\.com/i.test(url)) return '芒果TV';
+    return '该平台';
   }
 
   // Player event bindings
