@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>💃 外婆健身操</title>
+<style>
+/* ===== CSS Variables ===== */
+:root {
+  --warm-orange: #e07b3c;
+  --warm-orange-light: #f5a76b;
+  --warm-orange-dark: #c45d20;
+  --bg: #fff8f0;
+  --bg-card: #ffffff;
+  --text: #3d2c1e;
+  --text-secondary: #8b6f5c;
+  --text-muted: #b8a090;
+  --shadow: 0 4px 20px rgba(61, 44, 30, 0.08);
+  --shadow-hover: 0 6px 28px rgba(61, 44, 30, 0.14);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --danger: #d15252;
+  --success: #5a9e6f;
+  --font-xl: clamp(2rem, 5vw, 2.8rem);
+  --font-lg: clamp(1.3rem, 3.5vw, 1.8rem);
+  --font-md: clamp(1rem, 2.5vw, 1.2rem);
+  --font-sm: clamp(0.85rem, 2vw, 0.95rem);
+}
+
+/* ===== Reset ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Hide scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
+
+/* ===== App Container ===== */
+.app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== View Switching ===== */
+.view {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.view.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ===== Elderly Mode ===== */
+
+/* Header */
+.elderly-header {
+  padding: 24px 20px 12px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.elderly-header h1 {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: var(--warm-orange);
+  letter-spacing: 2px;
+  cursor: default;
+  display: inline-block;
+}
+
+/* Subtitle hint */
+.elderly-subtitle {
+  font-size: var(--font-sm);
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Video list */
+.video-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 20px 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Empty state */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}
+.empty-state .icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+.empty-state p {
+  font-size: var(--font-md);
+  line-height: 1.6;
+}
+
+/* Video card */
+.video-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 90px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: rgba(224, 123, 60, 0.1);
+}
+.video-card:active {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-hover);
+}
+
+.video-card .card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--warm-orange-light), var(--warm-orange));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+  color: #fff;
+}
+.video-card .card-info {
+  flex: 1;
+  min-width: 0;
+}
+.video-card .card-title {
+  font-size: var(--font-lg);
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.video-card .card-duration {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+.video-card .card-arrow {
+  font-size: 24px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+/* ===== Player View (elderly) ===== */
+.player-container {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.player-container.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.player-top {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.player-back-btn {
+  background: rgba(255,255,255,0.15);
+  border: none;
+  color: #fff;
+  font-size: var(--font-lg);
+  padding: 12px 24px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  -webkit-tap-highlight-color: rgba(255,255,255,0.1);
+  transition: background 0.2s;
+}
+.player-back-btn:active {
+  background: rgba(255,255,255,0.25);
+}
+
+.player-video-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  position: relative;
+}
+.player-video-wrapper video,
+.player-video-wrapper iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  object-fit: contain;
+}
+
+.player-video-wrapper .unsupported-hint {
+  color: #fff;
+  font-size: var(--font-md);
+  text-align: center;
+  padding: 20px;
+}
+.player-video-wrapper .unsupported-hint a {
+  color: var(--warm-orange-light);
+  font-size: var(--font-lg);
+  display: inline-block;
+  margin-top: 12px;
+  padding: 16px 32px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50px;
+  text-decoration: none;
+}
+
+.player-controls {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  gap: 20px;
+  flex-shrink: 0;
+}
+.player-ctrl-btn {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+  font-size: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, background 0.2s;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.player-ctrl-btn:active {
+  transform: scale(0.9);
+}
+.player-ctrl-btn.play-pause {
+  background: var(--warm-orange);
+  color: #fff;
+  width: 90px;
+  height: 90px;
+  font-size: 40px;
+  box-shadow: 0 4px 20px rgba(224, 123, 60, 0.4);
+}
+
+/* ===== Admin Mode ===== */
+.admin-container {
+  padding: 16px 20px 100px;
+  flex: 1;
+  overflow-y: auto;
+}
+.admin-container h2 {
+  font-size: var(--font-lg);
+  color: var(--text);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Admin sections */
+.admin-section {
+  margin-bottom: 24px;
+}
+.admin-section h3 {
+  font-size: var(--font-md);
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 24px;
+  border-radius: 50px;
+  border: none;
+  font-size: var(--font-md);
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(0.96); }
+
+.btn-primary {
+  background: var(--warm-orange);
+  color: #fff;
+}
+.btn-secondary {
+  background: #f0e6db;
+  color: var(--text);
+}
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+.btn-block {
+  width: 100%;
+  justify-content: center;
+}
+.btn-sm {
+  padding: 8px 16px;
+  font-size: var(--font-sm);
+}
+
+/* Forms */
+.form-group {
+  margin-bottom: 14px;
+}
+.form-group label {
+  display: block;
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.form-input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  border: 2px solid #e8dbce;
+  font-size: var(--font-md);
+  font-family: inherit;
+  background: #fff;
+  color: var(--text);
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+}
+.form-input:focus {
+  outline: none;
+  border-color: var(--warm-orange);
+}
+
+/* Video item in admin list */
+.admin-video-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #fff;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.admin-video-item .drag-handle {
+  cursor: grab;
+  color: var(--text-muted);
+  font-size: 20px;
+  padding: 4px;
+}
+.admin-video-item .item-info {
+  flex: 1;
+  min-width: 0;
+}
+.admin-video-item .item-title {
+  font-size: var(--font-md);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.admin-video-item .item-type {
+  font-size: var(--font-sm);
+  color: var(--text-muted);
+}
+.admin-video-item .item-delete {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--danger);
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.admin-video-item .item-delete:active {
+  background: rgba(209, 82, 82, 0.1);
+}
+
+/* Admin bottom bar */
+.admin-bottom {
+  position: sticky;
+  bottom: 0;
+  background: var(--bg);
+  padding: 16px 20px;
+  border-top: 1px solid #e8dbce;
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+/* ===== Password Dialog ===== */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+  padding: 20px;
+}
+.dialog-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.dialog-box {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 32px 24px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+.dialog-box h3 {
+  font-size: var(--font-lg);
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.dialog-box p {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+.dialog-box .form-input {
+  text-align: center;
+  font-size: 28px;
+  letter-spacing: 12px;
+  max-width: 200px;
+  margin: 0 auto;
+}
+.dialog-box .dialog-error {
+  color: var(--danger);
+  font-size: var(--font-sm);
+  margin-top: 8px;
+  min-height: 20px;
+}
+.dialog-btns {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+.dialog-btns .btn { flex: 1; }
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-120px);
+  background: #3d2c1e;
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 50px;
+  font-size: var(--font-md);
+  font-weight: 600;
+  z-index: 200;
+  pointer-events: none;
+  transition: transform 0.3s ease;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ===== Upload progress ===== */
+.progress-bar-wrapper {
+  margin-top: 12px;
+  background: #e8dbce;
+  border-radius: 10px;
+  height: 8px;
+  overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--warm-orange);
+  border-radius: 10px;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+/* ===== Responsive for very small screens ===== */
+@media (max-width: 400px) {
+  .video-card {
+    padding: 20px;
+    gap: 14px;
+    min-height: 76px;
+  }
+  .video-card .card-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 22px;
+    border-radius: 12px;
+  }
+  .player-ctrl-btn {
+    width: 64px;
+    height: 64px;
+    font-size: 28px;
+  }
+  .player-ctrl-btn.play-pause {
+    width: 72px;
+    height: 72px;
+    font-size: 32px;
+  }
+}
+
+/* ===== iPad landscape ===== */
+@media (min-width: 768px) {
+  .video-list-scroll {
+    padding: 12px 32px 100px;
+  }
+  .video-card {
+    min-height: 100px;
+  }
+}
+
+/* ===== Reduced motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- ===== Elderly Mode ===== -->
+  <div class="view active" id="elderlyView">
+
+    <div class="elderly-header">
+      <h1 id="elderlyTitle">💃 外婆健身操</h1>
+      <p class="elderly-subtitle" id="videoCountHint"></p>
+    </div>
+
+    <div class="video-list-scroll" id="videoList">
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- Player overlay -->
+    <div class="player-container" id="playerContainer">
+      <div class="player-top">
+        <button class="player-back-btn" id="playerBackBtn">◀ 返回列表</button>
+      </div>
+      <div class="player-video-wrapper" id="playerVideoWrapper">
+        <!-- Video/iframe inserted here -->
+      </div>
+      <div class="player-controls">
+        <button class="player-ctrl-btn play-pause" id="playerPlayPauseBtn" title="暂停 / 播放">⏸️</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== Admin Mode ===== -->
+  <div class="view" id="adminView">
+
+    <div class="admin-container">
+      <h2>⚙️ 视频管理</h2>
+
+      <!-- Add link -->
+      <div class="admin-section">
+        <h3>🔗 添加视频链接</h3>
+        <div class="form-group">
+          <label for="linkTitle">视频名称</label>
+          <input class="form-input" type="text" id="linkTitle" placeholder="例如：八段锦完整版">
+        </div>
+        <div class="form-group">
+          <label for="linkUrl">视频地址</label>
+          <input class="form-input" type="url" id="linkUrl" placeholder="https://...  B站 / YouTube / 直链">
+        </div>
+        <button class="btn btn-primary btn-block" id="addLinkBtn">➕ 添加链接视频</button>
+      </div>
+
+      <!-- Upload local -->
+      <div class="admin-section">
+        <h3>📁 上传本地视频</h3>
+        <button class="btn btn-secondary btn-block" id="uploadBtn">📂 选择视频文件上传</button>
+        <input type="file" id="fileInput" accept="video/*" style="display:none">
+        <div class="form-group" style="margin-top:12px">
+          <label for="uploadTitle">视频名称（可选）</label>
+          <input class="form-input" type="text" id="uploadTitle" placeholder="不填则使用文件名">
+        </div>
+        <div class="progress-bar-wrapper" id="progressWrapper" style="display:none">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <!-- Video management list -->
+      <div class="admin-section">
+        <h3>📋 视频列表（长按拖拽排序）</h3>
+        <div id="adminVideoList">
+          <!-- Populated by JS -->
+        </div>
+        <p style="color:var(--text-muted);font-size:0.8rem;text-align:center" id="emptyAdminHint">暂无视频，请添加上方添加</p>
+      </div>
+
+      <!-- Change password -->
+      <div class="admin-section">
+        <h3>🔒 管理密码</h3>
+        <div class="form-group">
+          <label for="newPassword">新密码（4-6位数字）</label>
+          <input class="form-input" type="password" id="newPassword" placeholder="留空则不修改" maxlength="6" inputmode="numeric" pattern="[0-9]*">
+        </div>
+      </div>
+    </div>
+
+    <div class="admin-bottom">
+      <button class="btn btn-secondary" id="adminCancelBtn" style="flex:1">取消</button>
+      <button class="btn btn-primary" id="adminSaveBtn" style="flex:2">💾 保存并退出</button>
+    </div>
+
+  </div>
+
+  <!-- ===== Password Dialog ===== -->
+  <div class="dialog-overlay" id="passwordDialog">
+    <div class="dialog-box">
+      <h3 id="dialogTitle">🔐 进入管理模式</h3>
+      <p id="dialogMsg">输入管理密码</p>
+      <input class="form-input" type="password" id="dialogPassword" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="····">
+      <p class="dialog-error" id="dialogError"></p>
+      <div class="dialog-btns">
+        <button class="btn btn-secondary" id="dialogCancelBtn">取消</button>
+        <button class="btn btn-primary" id="dialogConfirmBtn">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Toast ===== -->
+  <div class="toast" id="toast"></div>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ============================
+  //  IndexedDB Adapter
+  // ============================
+  const IDB_NAME = 'GrandmaFitnessDB';
+  const IDB_VERSION = 1;
+  const IDB_STORE = 'videos';
+
+  function openIDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(IDB_STORE)) {
+          db.createObjectStore(IDB_STORE, { keyPath: 'id' });
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function idbPut(id, blob) {
+    const db = await openIDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, 'readwrite');
+      tx.objectStore(IDB_STORE).put({ id, blob });
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  async function idbGet(id) {
+    const db = await openIDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, 'readonly');
+      const req = tx.objectStore(IDB_STORE).get(id);
+      req.onsuccess = () => resolve(req.result ? req.result.blob : null);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function idbDelete(id) {
+    const db = await openIDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, 'readwrite');
+      tx.objectStore(IDB_STORE).delete(id);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  async function idbGetAllKeys() {
+    const db = await openIDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, 'readonly');
+      const req = tx.objectStore(IDB_STORE).getAllKeys();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  // ============================
+  //  Storage Manager
+  // ============================
+  const STORAGE_KEY = 'grandma_fitness_data';
+
+  function loadMeta() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const data = JSON.parse(raw);
+        return {
+          videos: data.videos || [],
+          adminPassword: data.adminPassword || null,
+          version: data.version || 1
+        };
+      }
+    } catch(e) { /* corrupted data */ }
+    return { videos: [], adminPassword: null, version: 1 };
+  }
+
+  function saveMeta(meta) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(meta));
+  }
+
+  function generateId() {
+    return 'v_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+  }
+
+  // ============================
+  //  App State
+  // ============================
+  let meta = loadMeta();
+  let currentMode = 'elderly'; // 'elderly' | 'admin'
+  let titleClickCount = 0;
+  let titleClickTimer = null;
+  const TITLE_CLICK_THRESHOLD = 5;
+  const TITLE_CLICK_WINDOW = 2500; // ms
+
+  let currentPlayingVideo = null;
+  let playerVideoEl = null;
+  let isPlaying = false;
+
+  // ============================
+  //  DOM References
+  // ============================
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => document.querySelectorAll(sel);
+
+  const elderlyView = $('#elderlyView');
+  const adminView = $('#adminView');
+  const elderlyTitle = $('#elderlyTitle');
+  const videoCountHint = $('#videoCountHint');
+  const videoList = $('#videoList');
+  const playerContainer = $('#playerContainer');
+  const playerVideoWrapper = $('#playerVideoWrapper');
+  const playerBackBtn = $('#playerBackBtn');
+  const playerPlayPauseBtn = $('#playerPlayPauseBtn');
+
+  const adminVideoList = $('#adminVideoList');
+  const emptyAdminHint = $('#emptyAdminHint');
+  const addLinkBtn = $('#addLinkBtn');
+  const linkTitleInput = $('#linkTitle');
+  const linkUrlInput = $('#linkUrl');
+  const uploadBtn = $('#uploadBtn');
+  const fileInput = $('#fileInput');
+  const uploadTitleInput = $('#uploadTitle');
+  const progressWrapper = $('#progressWrapper');
+  const progressFill = $('#progressFill');
+  const newPasswordInput = $('#newPassword');
+  const adminSaveBtn = $('#adminSaveBtn');
+  const adminCancelBtn = $('#adminCancelBtn');
+
+  const passwordDialog = $('#passwordDialog');
+  const dialogTitle = $('#dialogTitle');
+  const dialogMsg = $('#dialogMsg');
+  const dialogPassword = $('#dialogPassword');
+  const dialogError = $('#dialogError');
+  const dialogConfirmBtn = $('#dialogConfirmBtn');
+  const dialogCancelBtn = $('#dialogCancelBtn');
+
+  const toast = $('#toast');
+
+  // ============================
+  //  Toast
+  // ============================
+  let toastTimer = null;
+  function showToast(msg, duration = 2000) {
+    if (toastTimer) clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.classList.add('show');
+    toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+      toastTimer = null;
+    }, duration);
+  }
+
+  // ============================
+  //  Elderly Mode: Render Video List
+  // ============================
+  function renderElderlyList() {
+    const videos = meta.videos.sort((a, b) => a.order - b.order);
+
+    if (videos.length === 0) {
+      videoCountHint.textContent = '';
+      videoList.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">📭</div>
+          <p>还没有视频哦～<br>让家人帮忙添加吧</p>
+        </div>`;
+      return;
+    }
+
+    videoCountHint.textContent = `共 ${videos.length} 个视频`;
+    videoList.innerHTML = videos.map((v, i) => `
+      <div class="video-card" data-video-id="${v.id}" data-index="${i}">
+        <div class="card-icon">🎬</div>
+        <div class="card-info">
+          <div class="card-title">${escapeHtml(v.title)}</div>
+          <div class="card-duration">${v.type === 'local' ? '本地视频' : '在线视频'}</div>
+        </div>
+        <div class="card-arrow">▸</div>
+      </div>
+    `).join('');
+
+    // Bind click events
+    videoList.querySelectorAll('.video-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const vid = card.dataset.videoId;
+        const video = meta.videos.find(v => v.id === vid);
+        if (video) openPlayer(video);
+      });
+    });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ============================
+  //  Video Player
+  // ============================
+  async function openPlayer(video) {
+    currentPlayingVideo = video;
+    playerVideoWrapper.innerHTML = '';
+    playerVideoEl = null;
+    isPlaying = false;
+    playerPlayPauseBtn.textContent = '▶️';
+
+    playerContainer.classList.add('active');
+
+    if (video.type === 'local') {
+      // Load blob from IndexedDB
+      try {
+        showToast('正在加载视频...', 1500);
+        const blob = await idbGet(video.localId);
+        if (!blob) {
+          playerVideoWrapper.innerHTML = `<div class="unsupported-hint">视频文件找不到了 😢<br><small>请让家人重新添加</small></div>`;
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        createVideoElement(url);
+      } catch(e) {
+        console.error('Failed to load local video:', e);
+        playerVideoWrapper.innerHTML = `<div class="unsupported-hint">视频加载失败 😢</div>`;
+      }
+    } else if (video.type === 'link') {
+      const src = video.source;
+
+      if (isBilibiliUrl(src)) {
+        // Bilibili embed
+        const bvid = extractBvid(src);
+        if (bvid) {
+          playerVideoWrapper.innerHTML = `
+            <iframe
+              src="https://player.bilibili.com/player.html?bvid=${bvid}&high_quality=1&autoplay=1"
+              allowfullscreen
+              allow="autoplay; fullscreen"
+              sandbox="allow-scripts allow-same-origin allow-presentation"
+            ></iframe>`;
+          isPlaying = true;
+          playerPlayPauseBtn.textContent = '⏸️';
+        } else {
+          showDirectLink(src);
+        }
+      } else if (isYouTubeUrl(src)) {
+        const videoId = extractYouTubeId(src);
+        if (videoId) {
+          playerVideoWrapper.innerHTML = `
+            <iframe
+              src="https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1"
+              allowfullscreen
+              allow="autoplay; fullscreen; picture-in-picture"
+            ></iframe>`;
+          isPlaying = true;
+          playerPlayPauseBtn.textContent = '⏸️';
+        } else {
+          showDirectLink(src);
+        }
+      } else {
+        // Direct video URL
+        createVideoElement(src);
+      }
+    }
+  }
+
+  function createVideoElement(src) {
+    playerVideoWrapper.innerHTML = '';
+    const video = document.createElement('video');
+    video.src = src;
+    video.controls = false; // We use our own controls
+    video.playsInline = true;
+    video.style.cssText = 'width:100%;height:100%;object-fit:contain;';
+    video.setAttribute('playsinline', '');
+
+    // Auto play
+    video.play().then(() => {
+      isPlaying = true;
+      playerPlayPauseBtn.textContent = '⏸️';
+    }).catch(() => {
+      // Autoplay blocked, show play button
+      isPlaying = false;
+      playerPlayPauseBtn.textContent = '▶️';
+    });
+
+    video.addEventListener('ended', () => {
+      isPlaying = false;
+      playerPlayPauseBtn.textContent = '🔄';
+    });
+
+    video.addEventListener('play', () => {
+      isPlaying = true;
+      playerPlayPauseBtn.textContent = '⏸️';
+    });
+
+    video.addEventListener('pause', () => {
+      isPlaying = false;
+      playerPlayPauseBtn.textContent = '▶️';
+    });
+
+    playerVideoWrapper.appendChild(video);
+    playerVideoEl = video;
+  }
+
+  function showDirectLink(url) {
+    playerVideoWrapper.innerHTML = `
+      <div class="unsupported-hint">
+        <p>点击下方按钮打开视频</p>
+        <a href="${escapeHtml(url)}" target="_blank" rel="noopener">📺 打开视频</a>
+      </div>`;
+  }
+
+  function closePlayer() {
+    if (playerVideoEl) {
+      playerVideoEl.pause();
+      if (playerVideoEl.src.startsWith('blob:')) {
+        URL.revokeObjectURL(playerVideoEl.src);
+      }
+      playerVideoEl = null;
+    }
+    playerVideoWrapper.innerHTML = '';
+    playerContainer.classList.remove('active');
+    currentPlayingVideo = null;
+    isPlaying = false;
+  }
+
+  function togglePlayPause() {
+    if (!currentPlayingVideo) return;
+
+    // For iframes, we can't control playback
+    const iframe = playerVideoWrapper.querySelector('iframe');
+    if (iframe) {
+      // Can't pause iframe - show hint
+      showToast('在线视频无法在此暂停，请点击视频内部控制');
+      return;
+    }
+
+    if (playerVideoEl) {
+      if (isPlaying) {
+        playerVideoEl.pause();
+      } else {
+        playerVideoEl.play().catch(() => {});
+      }
+    }
+  }
+
+  // URL detection helpers
+  function isBilibiliUrl(url) {
+    return /bilibili\.com/i.test(url);
+  }
+
+  function extractBvid(url) {
+    const m = url.match(/BV[a-zA-Z0-9]+/);
+    return m ? m[0] : null;
+  }
+
+  function isYouTubeUrl(url) {
+    return /(youtube\.com|youtu\.be)/i.test(url);
+  }
+
+  function extractYouTubeId(url) {
+    const patterns = [
+      /[?&]v=([a-zA-Z0-9_-]{11})/,
+      /youtu\.be\/([a-zA-Z0-9_-]{11})/,
+      /\/embed\/([a-zA-Z0-9_-]{11})/,
+      /\/v\/([a-zA-Z0-9_-]{11})/
+    ];
+    for (const p of patterns) {
+      const m = url.match(p);
+      if (m) return m[1];
+    }
+    return null;
+  }
+
+  // Player event bindings
+  playerBackBtn.addEventListener('click', closePlayer);
+  playerPlayPauseBtn.addEventListener('click', togglePlayPause);
+
+  // ============================
+  //  Admin Entry: 5-click on title
+  // ============================
+  elderlyTitle.addEventListener('click', () => {
+    titleClickCount++;
+    if (titleClickCount === 1) {
+      titleClickTimer = setTimeout(() => {
+        titleClickCount = 0;
+      }, TITLE_CLICK_WINDOW);
+    }
+    if (titleClickCount >= TITLE_CLICK_THRESHOLD) {
+      titleClickCount = 0;
+      if (titleClickTimer) clearTimeout(titleClickTimer);
+      showPasswordDialog();
+    }
+  });
+
+  function showPasswordDialog() {
+    dialogPassword.value = '';
+    dialogError.textContent = '';
+
+    if (!meta.adminPassword) {
+      // First time setup
+      dialogTitle.textContent = '🔐 设置管理密码';
+      dialogMsg.textContent = '首次使用，请设置一个简单密码';
+      dialogConfirmBtn.textContent = '设置密码';
+      dialogConfirmBtn.dataset.mode = 'setup';
+    } else {
+      dialogTitle.textContent = '🔐 进入管理模式';
+      dialogMsg.textContent = '输入管理密码';
+      dialogConfirmBtn.textContent = '确认';
+      dialogConfirmBtn.dataset.mode = 'verify';
+    }
+
+    passwordDialog.classList.add('active');
+    setTimeout(() => dialogPassword.focus(), 300);
+  }
+
+  function hidePasswordDialog() {
+    passwordDialog.classList.remove('active');
+    dialogPassword.value = '';
+    dialogError.textContent = '';
+  }
+
+  dialogConfirmBtn.addEventListener('click', () => {
+    const pwd = dialogPassword.value.trim();
+    const mode = dialogConfirmBtn.dataset.mode;
+
+    if (mode === 'setup') {
+      if (pwd.length < 4) {
+        dialogError.textContent = '密码至少4位数字哦～';
+        return;
+      }
+      meta.adminPassword = pwd;
+      saveMeta(meta);
+      hidePasswordDialog();
+      showToast('✅ 密码设置成功！');
+      switchToAdmin();
+    } else {
+      if (pwd === meta.adminPassword) {
+        hidePasswordDialog();
+        switchToAdmin();
+      } else {
+        dialogError.textContent = '密码不对，再试一次～';
+        dialogPassword.value = '';
+        dialogPassword.focus();
+      }
+    }
+  });
+
+  dialogCancelBtn.addEventListener('click', hidePasswordDialog);
+  passwordDialog.addEventListener('click', (e) => {
+    if (e.target === passwordDialog) hidePasswordDialog();
+  });
+
+  // Keyboard support
+  dialogPassword.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') dialogConfirmBtn.click();
+    if (e.key === 'Escape') hidePasswordDialog();
+  });
+
+  // ============================
+  //  Mode Switching
+  // ============================
+  function switchToAdmin() {
+    currentMode = 'admin';
+    elderlyView.classList.remove('active');
+    adminView.classList.add('active');
+    closePlayer();
+    renderAdminList();
+  }
+
+  function switchToElderly(saveChanges = false) {
+    if (saveChanges) {
+      saveMeta(meta);
+    } else {
+      // Discard changes: reload from storage
+      meta = loadMeta();
+    }
+    currentMode = 'elderly';
+    adminView.classList.remove('active');
+    elderlyView.classList.add('active');
+    renderElderlyList();
+  }
+
+  // ============================
+  //  Admin Mode: Render
+  // ============================
+  function renderAdminList() {
+    const videos = meta.videos.sort((a, b) => a.order - b.order);
+
+    if (videos.length === 0) {
+      emptyAdminHint.style.display = 'block';
+      adminVideoList.innerHTML = '';
+    } else {
+      emptyAdminHint.style.display = 'none';
+      adminVideoList.innerHTML = videos.map((v, i) => `
+        <div class="admin-video-item" data-video-id="${v.id}" draggable="true">
+          <span class="drag-handle">☰</span>
+          <span style="font-size:24px">${v.type === 'local' ? '📁' : '🔗'}</span>
+          <div class="item-info">
+            <div class="item-title">${escapeHtml(v.title)}</div>
+            <div class="item-type">${v.type === 'local' ? '本地视频' : '在线链接'}</div>
+          </div>
+          <button class="item-delete" data-delete-id="${v.id}" title="删除">🗑️</button>
+        </div>
+      `).join('');
+
+      // Bind delete buttons
+      adminVideoList.querySelectorAll('.item-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const vid = btn.dataset.deleteId;
+          deleteVideo(vid);
+        });
+      });
+
+      // Bind drag events for reordering
+      bindDragEvents();
+    }
+  }
+
+  function bindDragEvents() {
+    const items = adminVideoList.querySelectorAll('.admin-video-item');
+    let draggedItem = null;
+
+    items.forEach(item => {
+      item.addEventListener('dragstart', (e) => {
+        draggedItem = item;
+        item.style.opacity = '0.5';
+        e.dataTransfer.effectAllowed = 'move';
+      });
+
+      item.addEventListener('dragend', (e) => {
+        item.style.opacity = '1';
+        draggedItem = null;
+        // Recalculate order based on DOM position
+        const currentItems = adminVideoList.querySelectorAll('.admin-video-item');
+        currentItems.forEach((el, idx) => {
+          const vid = el.dataset.videoId;
+          const video = meta.videos.find(v => v.id === vid);
+          if (video) video.order = idx;
+        });
+      });
+
+      item.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        if (draggedItem && draggedItem !== item) {
+          const rect = item.getBoundingClientRect();
+          const midY = rect.top + rect.height / 2;
+          if (e.clientY < midY) {
+            item.parentNode.insertBefore(draggedItem, item);
+          } else {
+            item.parentNode.insertBefore(draggedItem, item.nextSibling);
+          }
+        }
+      });
+
+      item.addEventListener('drop', (e) => {
+        e.preventDefault();
+      });
+    });
+  }
+
+  // ============================
+  //  Admin Mode: CRUD
+  // ============================
+  async function deleteVideo(vid) {
+    const video = meta.videos.find(v => v.id === vid);
+    if (!video) return;
+
+    // Confirm
+    if (!confirm(`确定要删除「${video.title}」吗？\n删除后无法恢复。`)) return;
+
+    // If local video, delete from IndexedDB
+    if (video.type === 'local' && video.localId) {
+      try {
+        await idbDelete(video.localId);
+      } catch(e) {
+        console.error('Failed to delete from IDB:', e);
+      }
+    }
+
+    // Remove from meta
+    meta.videos = meta.videos.filter(v => v.id !== vid);
+    saveMeta(meta);
+    renderAdminList();
+    showToast('✅ 已删除');
+  }
+
+  addLinkBtn.addEventListener('click', () => {
+    const title = linkTitleInput.value.trim();
+    const url = linkUrlInput.value.trim();
+
+    if (!title) { showToast('请填写视频名称'); return; }
+    if (!url) { showToast('请填写视频地址'); return; }
+
+    try { new URL(url); } catch(e) {
+      showToast('请输入有效的网址');
+      return;
+    }
+
+    meta.videos.push({
+      id: generateId(),
+      title: title,
+      type: 'link',
+      source: url,
+      order: meta.videos.length
+    });
+
+    saveMeta(meta);
+    linkTitleInput.value = '';
+    linkUrlInput.value = '';
+    renderAdminList();
+    showToast('✅ 视频链接已添加！');
+  });
+
+  uploadBtn.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const title = uploadTitleInput.value.trim() || file.name.replace(/\.[^.]+$/, '');
+
+    // Show progress
+    progressWrapper.style.display = 'block';
+    progressFill.style.width = '0%';
+
+    try {
+      // Simulate progress
+      progressFill.style.width = '30%';
+      await sleep(200);
+
+      // Read file as ArrayBuffer for progress tracking
+      const blob = await readFileAsBlob(file);
+      progressFill.style.width = '70%';
+
+      // Store in IndexedDB
+      const localId = generateId();
+      await idbPut(localId, blob);
+      progressFill.style.width = '100%';
+
+      // Add to meta
+      meta.videos.push({
+        id: generateId(),
+        title: title,
+        type: 'local',
+        localId: localId,
+        fileName: file.name,
+        fileSize: file.size,
+        order: meta.videos.length
+      });
+
+      saveMeta(meta);
+      await sleep(300);
+
+      progressWrapper.style.display = 'none';
+      progressFill.style.width = '0%';
+      uploadTitleInput.value = '';
+      fileInput.value = '';
+      renderAdminList();
+      showToast('✅ 视频上传成功！');
+    } catch(err) {
+      console.error('Upload failed:', err);
+      progressWrapper.style.display = 'none';
+      progressFill.style.width = '0%';
+      showToast('❌ 上传失败，请重试');
+    }
+  });
+
+  function readFileAsBlob(file) {
+    return new Promise((resolve, reject) => {
+      // For large files, we can store as-is since File extends Blob
+      // But we create a proper Blob copy to avoid reference issues
+      try {
+        const blob = new Blob([file], { type: file.type });
+        resolve(blob);
+      } catch(e) {
+        reject(e);
+      }
+    });
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Save & Exit
+  adminSaveBtn.addEventListener('click', () => {
+    // Check password change
+    const newPwd = newPasswordInput.value.trim();
+    if (newPwd) {
+      if (newPwd.length < 4) {
+        showToast('密码至少4位数字哦～');
+        return;
+      }
+      meta.adminPassword = newPwd;
+      newPasswordInput.value = '';
+    }
+    switchToElderly(true);
+    showToast('✅ 已保存！');
+  });
+
+  adminCancelBtn.addEventListener('click', () => {
+    newPasswordInput.value = '';
+    switchToElderly(false);
+  });
+
+  // ============================
+  //  Keyboard shortcuts
+  // ============================
+  document.addEventListener('keydown', (e) => {
+    // ESC to close player
+    if (e.key === 'Escape' && playerContainer.classList.contains('active')) {
+      closePlayer();
+    }
+    // Space to toggle play/pause in player
+    if (e.key === ' ' && playerContainer.classList.contains('active')) {
+      e.preventDefault();
+      togglePlayPause();
+    }
+  });
+
+  // ============================
+  //  Cleanup blob URLs on page unload
+  // ============================
+  window.addEventListener('beforeunload', () => {
+    if (playerVideoEl && playerVideoEl.src.startsWith('blob:')) {
+      URL.revokeObjectURL(playerVideoEl.src);
+    }
+  });
+
+  // ============================
+  //  Handle page visibility (pause video when hidden)
+  // ============================
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && playerVideoEl && isPlaying) {
+      playerVideoEl.pause();
+    }
+  });
+
+  // ============================
+  //  Initial Render
+  // ============================
+  renderElderlyList();
+
+  console.log('👵💃 外婆健身操已就绪！');
+  console.log('  老年模式：大字大按钮，点击直接播放');
+  console.log('  管理模式：连续点击标题 ' + TITLE_CLICK_THRESHOLD + ' 次进入');
+  console.log('  存储引擎：localStorage + IndexedDB');
+  console.log('  已存储视频数：' + meta.videos.length);
+
+})();
+</script>
+</body>
+</html>
