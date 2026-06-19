@@ -608,6 +608,7 @@ html, body {
     const { data, error } = await supabase
       .from('videos')
       .select('*')
+      .eq('user_id', currentUser.id)
       .order('sort_order', { ascending: true });
 
     if (error) throw error;
@@ -633,13 +634,14 @@ html, body {
       file_name: video.fileName || null,
       file_size: video.fileSize || null,
       sort_order: video.order,
+      user_id: currentUser.id,
       updated_at: new Date().toISOString()
     });
     if (error) throw error;
   }
 
   async function deleteVideoFromSupabase(videoId) {
-    const { error } = await supabase.from('videos').delete().eq('id', videoId);
+    const { error } = await supabase.from('videos').delete().eq('id', videoId).eq('user_id', currentUser.id);
     if (error) throw error;
   }
 
@@ -653,6 +655,7 @@ html, body {
       file_name: v.fileName || null,
       file_size: v.fileSize || null,
       sort_order: v.order,
+      user_id: currentUser.id,
       updated_at: new Date().toISOString()
     }));
 
@@ -674,7 +677,7 @@ html, body {
     realtimeChannel = supabase
       .channel('videos-changes')
       .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'videos' },
+        { event: '*', schema: 'public', table: 'videos', filter: `user_id=eq.${currentUser.id}` },
         async () => {
           // Reload videos from Supabase when any change happens
           try {
