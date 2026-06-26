@@ -4,59 +4,174 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>💃 外婆健身操</title>
+
+<!-- Google Fonts: Long Cang 龙藏体 + Noto Serif SC -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Long+Cang&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+
 <style>
-/* ===== CSS Variables ===== */
+/* ================================================================
+   DESIGN TOKENS — julianoczkowski/designer-skills
+   ================================================================ */
 :root {
-  --warm-orange: #e07b3c;
-  --warm-orange-light: #f5a76b;
-  --warm-orange-dark: #c45d20;
-  --bg: #fff8f0;
-  --bg-card: #ffffff;
-  --text: #3d2c1e;
-  --text-secondary: #8b6f5c;
-  --text-muted: #b8a090;
-  --shadow: 0 4px 20px rgba(61, 44, 30, 0.08);
-  --shadow-hover: 0 6px 28px rgba(61, 44, 30, 0.14);
-  --radius: 20px;
-  --radius-sm: 12px;
-  --danger: #d15252;
-  --success: #5a9e6f;
-  --font-xl: clamp(2rem, 5vw, 2.8rem);
-  --font-lg: clamp(1.3rem, 3.5vw, 1.8rem);
-  --font-md: clamp(1rem, 2.5vw, 1.2rem);
-  --font-sm: clamp(0.85rem, 2vw, 0.95rem);
+  /* Primary palette — food-preferences inspired, warmth-oriented */
+  --mint:        #78C2A4;
+  --mint-light:  #A8D9C0;
+  --mint-dark:   #5A9E7A;
+  --warm-yellow: #F6D97A;
+  --yellow-dark: #D4B84E;
+  --coral:       #F28C8C;
+  --coral-dark:  #D46A6A;
+  --sky:         #A9D6E5;
+  --sky-dark:    #7DB8C8;
+
+  /* Surfaces — paper textures */
+  --paper:       #F7F4EC;
+  --paper-warm:  #F0E8D8;
+  --paper-dark:  #2A2520;
+  --card-bg:     #FFFDF7;
+  --card-bg-dark:#3A3530;
+
+  /* Typography */
+  --font-display: 'Long Cang', 'Ma Shan Zheng', cursive;
+  --font-body:    'Noto Serif SC', 'PingFang SC', 'Microsoft YaHei', serif;
+  --font-ui:      'Noto Serif SC', sans-serif;
+
+  /* Type scale — hand-drawn friendly */
+  --text-3xl: clamp(2.8rem, 7vw, 4rem);
+  --text-2xl: clamp(2rem, 5vw, 2.8rem);
+  --text-xl:  clamp(1.4rem, 3.5vw, 1.8rem);
+  --text-lg:  clamp(1.1rem, 2.5vw, 1.3rem);
+  --text-md:  clamp(1rem, 2vw, 1.1rem);
+  --text-sm:  clamp(0.85rem, 1.5vw, 0.95rem);
+  --text-xs:  clamp(0.7rem, 1.2vw, 0.8rem);
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Radii — slightly irregular feeling */
+  --radius-sm: 10px 14px 8px 12px;
+  --radius-md: 16px 20px 14px 18px;
+  --radius-lg: 24px 28px 20px 26px;
+  --radius-pill: 50px;
+
+  /* Crayon shadow — emilkowalski/skill motion principles */
+  --crayon-shadow-sm: 2px 3px 0px rgba(90,70,50,0.12), -1px -1px 0px rgba(90,70,50,0.04);
+  --crayon-shadow-md: 3px 5px 0px rgba(90,70,50,0.14), -2px -1px 0px rgba(90,70,50,0.05);
+  --crayon-shadow-lg: 4px 7px 0px rgba(90,70,50,0.16), -2px -2px 0px rgba(90,70,50,0.06);
+  --crayon-shadow-glow: 0 0 30px rgba(120,194,164,0.15), 3px 5px 0px rgba(90,70,50,0.12);
+
+  /* Motion tokens — taste-skill DESIGN_VARIANCE=3, MOTION_INTENSITY=4 */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 150ms;
+  --duration-md:   300ms;
+  --duration-slow: 500ms;
+  --duration-glacial: 800ms;
+
+  /* Layout */
+  --app-max-w: 720px;
+  --header-h: auto;
 }
 
-/* ===== Reset ===== */
+/* ================================================================
+   RESET & BASE — web-design-guidelines vercel-labs
+   ================================================================ */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-html, body {
+html {
   height: 100%;
   overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: #3D3028;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
   user-select: none;
   -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
 }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; }
+/* Paper texture — dual-layer: CSS gradient + SVG noise */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(180,160,130,0.03) 2px,
+      rgba(180,160,130,0.03) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 1px,
+      rgba(160,140,110,0.02) 1px,
+      rgba(160,140,110,0.02) 2px
+    );
+  opacity: 0.6;
+}
 
-/* ===== App Container ===== */
+/* Scrollbar — hand-drawn style */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(120,194,164,0.4);
+  border-radius: 4px;
+  border: 2px solid transparent;
+}
+
+/* Focus — accessible outlines (UI/UX Design Review) */
+:focus-visible {
+  outline: 3px dashed var(--mint);
+  outline-offset: 3px;
+}
+
+/* ================================================================
+   SVG FILTERS — frontend-design + taste-skill rough edge effect
+   ================================================================ */
+.rough-edge {
+  filter: url(#rough-paper);
+}
+
+/* ================================================================
+   TYPOGRAPHY UTILITIES
+   ================================================================ */
+.display-font { font-family: var(--font-display); }
+.body-font   { font-family: var(--font-body); }
+
+/* ================================================================
+   APP SHELL
+   ================================================================ */
 .app {
+  position: relative; z-index: 1;
   height: 100%;
   display: flex;
   flex-direction: column;
-  max-width: 800px;
+  max-width: var(--app-max-w);
   margin: 0 auto;
-  position: relative;
   overflow: hidden;
 }
 
-/* ===== View Switching ===== */
+/* ================================================================
+   VIEW TRANSITIONS — emilkowalski/skill motion
+   ================================================================ */
 .view {
   position: absolute;
   inset: 0;
@@ -64,142 +179,254 @@ html, body {
   flex-direction: column;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.35s ease;
+  transition: opacity var(--duration-md) var(--ease-out);
+  will-change: opacity;
 }
 .view.active {
   opacity: 1;
   pointer-events: auto;
 }
 
-/* ===== Login View ===== */
+/* ================================================================
+   TOAST — hand-drawn card
+   ================================================================ */
+.toast {
+  position: fixed; top: 24px; left: 50%; z-index: 300;
+  transform: translateX(-50%) translateY(-140px);
+  background: var(--card-bg);
+  color: #3D3028;
+  padding: 14px 28px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: 600;
+  box-shadow: var(--crayon-shadow-md);
+  border: 2px solid rgba(0,0,0,0.06);
+  transition: transform var(--duration-md) var(--ease-spring);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ================================================================
+   LOGIN VIEW — taste-skill + web-design-guidelines
+   ================================================================ */
 .login-view {
   align-items: center;
   justify-content: center;
-  padding: 30px 20px;
-  background: var(--bg);
-  gap: 20px;
-}
-.login-view .login-icon {
-  font-size: 72px;
-  animation: bounce 2s ease infinite;
-}
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
-}
-.login-view h1 {
-  font-size: var(--font-xl);
-  color: var(--warm-orange);
-  letter-spacing: 2px;
+  padding: var(--space-xl) var(--space-lg);
+  background: var(--paper);
+  gap: var(--space-lg);
   text-align: center;
+}
+
+/* Hand-drawn decorative leaf SVG */
+.login-leaf-deco {
+  width: 120px; height: 40px;
+  opacity: 0.5;
+  margin-bottom: -8px;
+}
+
+.login-view .login-icon {
+  font-size: 80px;
+  animation: gentle-float 3s var(--ease-in-out) infinite;
+  filter: drop-shadow(2px 3px 0px rgba(90,70,50,0.1));
+}
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+.login-view h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  color: var(--mint-dark);
+  letter-spacing: 4px;
+  line-height: 1.2;
 }
 .login-view .login-subtitle {
-  font-size: var(--font-sm);
-  color: var(--text-muted);
-  text-align: center;
-  margin-bottom: 8px;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: #9B8E80;
+  margin-top: var(--space-xs);
 }
+
+/* Login card — sketchy */
 .login-card {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  padding: 32px 24px;
-  box-shadow: var(--shadow);
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl) var(--space-lg);
+  box-shadow: var(--crayon-shadow-md);
+  border: 2.5px solid rgba(0,0,0,0.06);
   width: 100%;
-  max-width: 360px;
+  max-width: 380px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: var(--space-lg);
+  position: relative;
 }
+.login-card::before {
+  content: '🌿';
+  position: absolute; top: -18px; left: 12px;
+  font-size: 20px; opacity: 0.5;
+  transform: rotate(-15deg);
+}
+.login-card::after {
+  content: '🍃';
+  position: absolute; bottom: -18px; right: 16px;
+  font-size: 18px; opacity: 0.5;
+  transform: rotate(20deg);
+}
+
 .login-card label {
-  font-size: var(--font-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--text-secondary);
+  color: #6B5D50;
+  display: block;
+  margin-bottom: var(--space-xs);
 }
+
+/* Form input — sketchy border */
 .login-card .form-input {
   width: 100%;
   padding: 16px 18px;
   border-radius: var(--radius-sm);
-  border: 2px solid #e8dbce;
-  font-size: var(--font-md);
-  font-family: inherit;
-  background: #fff;
-  color: var(--text);
-  transition: border-color 0.2s;
+  border: 2.5px solid rgba(0,0,0,0.08);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  background: var(--paper);
+  color: #3D3028;
+  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
   -webkit-appearance: none;
 }
 .login-card .form-input:focus {
   outline: none;
-  border-color: var(--warm-orange);
+  border-color: var(--mint);
+  box-shadow: 0 0 0 4px rgba(120,194,164,0.12);
 }
+
 .login-error {
-  color: var(--danger);
-  font-size: var(--font-sm);
+  font-family: var(--font-body);
+  color: var(--coral-dark);
+  font-size: var(--text-sm);
   text-align: center;
-  min-height: 20px;
+  min-height: 22px;
+  transition: opacity var(--duration-fast);
 }
-.login-card .btn-login {
-  padding: 18px;
-  border-radius: 50px;
-  border: none;
-  font-size: var(--font-lg);
-  font-family: inherit;
-  font-weight: 700;
+
+/* Button — hand-drawn pill */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 14px 28px;
+  border-radius: var(--radius-pill);
+  border: 2.5px solid rgba(0,0,0,0.06);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  letter-spacing: 2px;
   cursor: pointer;
-  background: var(--warm-orange);
+  transition: transform var(--duration-fast) var(--ease-spring),
+              box-shadow var(--duration-fast) var(--ease-out);
+  background: var(--card-bg);
+  color: #3D3028;
+  box-shadow: var(--crayon-shadow-sm);
+  position: relative;
+}
+.btn:active { transform: scale(0.95); }
+.btn:disabled { opacity: 0.5; pointer-events: none; }
+
+.btn-primary {
+  background: var(--mint);
   color: #fff;
-  transition: transform 0.1s, background 0.2s;
-  -webkit-tap-highlight-color: transparent;
+  box-shadow: var(--crayon-shadow-md);
+  border-color: var(--mint-dark);
+  font-size: var(--text-xl);
+  padding: 18px 32px;
 }
-.login-card .btn-login:active { transform: scale(0.96); }
-.login-card .btn-login:disabled {
-  opacity: 0.6;
-  pointer-events: none;
+.btn-primary:active { box-shadow: var(--crayon-shadow-sm); }
+
+.btn-secondary {
+  background: var(--paper-warm);
+  color: #5A4A3A;
 }
-.login-footer {
-  text-align: center;
+
+.btn-danger {
+  background: var(--coral);
+  color: #fff;
+  border-color: var(--coral-dark);
 }
+
+.btn-block { width: 100%; justify-content: center; }
+.btn-sm { padding: 8px 18px; font-size: var(--text-md); }
+
+.login-footer { text-align: center; }
 .login-footer a {
-  font-size: var(--font-sm);
-  color: var(--warm-orange);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--mint-dark);
   text-decoration: none;
   cursor: pointer;
+  transition: color var(--duration-fast);
+  border-bottom: 1.5px dashed var(--mint-light);
 }
-.login-footer a:hover { text-decoration: underline; }
+.login-footer a:hover { color: var(--mint); }
 .login-footer .logout-link {
-  color: var(--text-muted);
-  font-size: var(--font-sm);
+  color: #9B8E80;
+  font-size: var(--text-sm);
   cursor: pointer;
   margin-top: 8px;
   display: inline-block;
 }
 
-/* ===== Elderly Mode ===== */
+/* ================================================================
+   ELDERLY MODE — large, warm, ultra-clear
+   ================================================================ */
 .elderly-header {
-  padding: 24px 20px 12px;
+  padding: var(--space-xl) var(--space-lg) var(--space-sm);
   text-align: center;
   flex-shrink: 0;
+  position: relative;
 }
 .elderly-header h1 {
-  font-size: var(--font-xl);
-  font-weight: 700;
-  color: var(--warm-orange);
-  letter-spacing: 2px;
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  color: var(--mint-dark);
+  letter-spacing: 4px;
   cursor: default;
   display: inline-block;
+  position: relative;
+  transition: transform var(--duration-fast) var(--ease-spring);
 }
+.elderly-header h1:active { transform: scale(0.97); }
+
+/* Decorative leaf doodles around title */
+.elderly-header .deco-left,
+.elderly-header .deco-right {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  font-size: 28px; opacity: 0.3; pointer-events: none;
+}
+.elderly-header .deco-left  { left: 8px; }
+.elderly-header .deco-right { right: 8px; }
+
 .elderly-subtitle {
-  font-size: var(--font-sm);
-  color: var(--text-muted);
-  margin-top: 4px;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: #9B8E80;
+  margin-top: var(--space-xs);
 }
+
+/* Video list scroll */
 .video-list-scroll {
   flex: 1;
   overflow-y: auto;
-  padding: 8px 20px 100px;
+  padding: var(--space-sm) var(--space-lg) 120px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-md);
+  scroll-behavior: smooth;
 }
+
+/* Empty state — warm and encouraging */
 .empty-state {
   flex: 1;
   display: flex;
@@ -207,78 +434,143 @@ html, body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 40px 20px;
-  color: var(--text-muted);
+  padding: var(--space-2xl) var(--space-lg);
+  gap: var(--space-md);
 }
-.empty-state .icon { font-size: 64px; margin-bottom: 16px; opacity: 0.5; }
-.empty-state p { font-size: var(--font-md); line-height: 1.6; }
+.empty-state .empty-icon {
+  font-size: 72px;
+  opacity: 0.45;
+  animation: gentle-float 4s var(--ease-in-out) infinite;
+}
+.empty-state p {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  color: #9B8E80;
+  line-height: 1.7;
+  max-width: 280px;
+}
 
-/* Video card */
+/* Video card — taste-skill sketchy card */
 .video-card {
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  padding: 24px 28px;
-  box-shadow: var(--shadow);
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--crayon-shadow-sm);
+  border: 2px solid rgba(0,0,0,0.05);
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 20px;
-  min-height: 90px;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  gap: var(--space-md);
+  min-height: 88px;
+  transition: transform var(--duration-fast) var(--ease-spring),
+              box-shadow var(--duration-fast) var(--ease-out);
+  position: relative;
+  overflow: hidden;
 }
-.video-card:active { transform: scale(0.97); box-shadow: var(--shadow-hover); }
-.video-card .card-icon {
-  width: 56px; height: 56px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, var(--warm-orange-light), var(--warm-orange));
+.video-card:hover {
+  box-shadow: var(--crayon-shadow-md);
+  transform: translateY(-2px);
+}
+.video-card:active {
+  transform: scale(0.97);
+  box-shadow: var(--crayon-shadow-sm);
+}
+
+/* Play icon — hand-drawn circle */
+.video-card .card-play-icon {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: var(--mint);
   display: flex; align-items: center; justify-content: center;
-  font-size: 28px; flex-shrink: 0; color: #fff;
+  font-size: 28px;
+  flex-shrink: 0;
+  box-shadow: 2px 3px 0px rgba(90,126,106,0.2);
+  position: relative;
+}
+.video-card .card-play-icon::after {
+  content: '';
+  position: absolute; inset: -4px; border-radius: 50%;
+  border: 2px dashed rgba(120,194,164,0.25);
 }
 .video-card .card-info { flex: 1; min-width: 0; }
 .video-card .card-title {
-  font-size: var(--font-lg); font-weight: 600;
-  color: var(--text);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  color: #3D3028;
+  letter-spacing: 1.5px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  line-height: 1.3;
 }
-.video-card .card-duration {
-  font-size: var(--font-sm); color: var(--text-secondary); margin-top: 4px;
+.video-card .card-type-badge {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: #9B8E80;
+  margin-top: 4px;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: rgba(0,0,0,0.03);
+  border: 1px solid rgba(0,0,0,0.05);
 }
-.video-card .card-arrow { font-size: 24px; color: var(--text-muted); flex-shrink: 0; }
+.video-card .card-arrow {
+  font-size: 28px;
+  color: var(--mint);
+  flex-shrink: 0;
+  transition: transform var(--duration-fast) var(--ease-spring);
+}
+.video-card:hover .card-arrow { transform: translateX(4px); }
 
-/* Syncing indicator */
+/* Sync indicator — subtle floating pill */
 .sync-indicator {
   position: fixed;
-  top: 8px;
+  top: 12px;
   right: 16px;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  z-index: 5;
-  padding: 4px 10px;
-  background: rgba(255,255,255,0.8);
-  border-radius: 20px;
-  transition: opacity 0.3s;
+  z-index: 20;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  padding: 6px 14px;
+  background: var(--card-bg);
+  border-radius: var(--radius-pill);
+  border: 1.5px solid rgba(0,0,0,0.06);
+  box-shadow: var(--crayon-shadow-sm);
+  transition: opacity var(--duration-md), transform var(--duration-md) var(--ease-spring);
 }
-.sync-indicator.syncing { color: var(--warm-orange); }
-.sync-indicator.synced { color: var(--success); opacity: 0; transition: opacity 0.5s 1s; }
+.sync-indicator.syncing { color: var(--mint-dark); }
+.sync-indicator.synced {
+  color: var(--mint); opacity: 0; transform: translateY(-8px);
+  transition: opacity 0.5s 1.5s, transform 0.5s 1.5s var(--ease-out);
+}
 
-/* ===== Player View ===== */
+/* ================================================================
+   PLAYER — fullscreen overlay, minimal controls
+   ================================================================ */
 .player-container {
-  position: absolute; inset: 0; background: #000;
-  display: flex; flex-direction: column; z-index: 10;
-  opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+  position: absolute; inset: 0; background: #1A1815; z-index: 30;
+  display: flex; flex-direction: column;
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--duration-md) var(--ease-out);
 }
 .player-container.active { opacity: 1; pointer-events: auto; }
+
 .player-top {
-  display: flex; align-items: center; padding: 16px 20px; gap: 16px; flex-shrink: 0;
+  display: flex; align-items: center; padding: var(--space-md) var(--space-lg);
+  gap: var(--space-md); flex-shrink: 0;
 }
 .player-back-btn {
-  background: rgba(255,255,255,0.15); border: none; color: #fff;
-  font-size: var(--font-lg); padding: 12px 24px; border-radius: 50px;
-  cursor: pointer; font-family: inherit; font-weight: 600;
+  background: rgba(255,255,255,0.08);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  letter-spacing: 2px;
+  padding: 10px 24px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
   display: flex; align-items: center; gap: 6px;
-  transition: background 0.2s;
+  transition: background var(--duration-fast);
 }
-.player-back-btn:active { background: rgba(255,255,255,0.25); }
+.player-back-btn:active { background: rgba(255,255,255,0.16); }
+
 .player-video-wrapper {
   flex: 1; display: flex; align-items: center; justify-content: center;
   background: #000; position: relative;
@@ -287,149 +579,298 @@ html, body {
 .player-video-wrapper iframe {
   width: 100%; height: 100%; border: none; object-fit: contain;
 }
+
 .player-video-wrapper .unsupported-hint {
-  color: #fff; font-size: var(--font-md); text-align: center; padding: 20px;
+  color: #fff; text-align: center; padding: var(--space-xl);
+  font-family: var(--font-body);
 }
 .player-video-wrapper .unsupported-hint a {
-  color: var(--warm-orange-light); font-size: var(--font-lg);
-  display: inline-block; margin-top: 12px; padding: 16px 32px;
-  background: rgba(255,255,255,0.1); border-radius: 50px; text-decoration: none;
+  color: var(--mint-light); font-family: var(--font-display);
+  font-size: var(--text-xl); letter-spacing: 2px;
+  display: inline-block; margin-top: var(--space-md);
+  padding: var(--space-md) var(--space-xl);
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  transition: background var(--duration-fast);
 }
+.player-video-wrapper .unsupported-hint a:hover {
+  background: rgba(255,255,255,0.12);
+}
+
 .player-controls {
-  display: flex; justify-content: center; padding: 20px; gap: 20px; flex-shrink: 0;
+  display: flex; justify-content: center; padding: var(--space-lg);
+  gap: var(--space-lg); flex-shrink: 0;
 }
 .player-ctrl-btn {
-  width: 80px; height: 80px; border-radius: 50%; border: none;
-  font-size: 36px; cursor: pointer; display: flex; align-items: center;
-  justify-content: center; transition: transform 0.1s, background 0.2s;
-  font-family: inherit;
+  width: 76px; height: 76px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.15);
+  font-size: 32px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.06);
+  transition: transform var(--duration-fast) var(--ease-spring),
+              background var(--duration-fast);
+  color: #fff;
 }
-.player-ctrl-btn:active { transform: scale(0.9); }
+.player-ctrl-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.14); }
 .player-ctrl-btn.play-pause {
-  background: var(--warm-orange); color: #fff; width: 90px; height: 90px;
-  font-size: 40px; box-shadow: 0 4px 20px rgba(224, 123, 60, 0.4);
+  width: 88px; height: 88px; font-size: 36px;
+  background: var(--mint); border-color: var(--mint-dark);
+  color: #fff;
 }
 
-/* ===== Admin Mode ===== */
-.admin-container { padding: 16px 20px 100px; flex: 1; overflow-y: auto; }
+/* ================================================================
+   ADMIN MODE — sketchy management UI
+   ================================================================ */
+.admin-container {
+  padding: var(--space-md) var(--space-lg) 100px;
+  flex: 1; overflow-y: auto;
+}
 .admin-container h2 {
-  font-size: var(--font-lg); color: var(--text); margin-bottom: 20px;
-  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  color: var(--mint-dark);
+  letter-spacing: 3px;
+  margin-bottom: var(--space-lg);
+  display: flex; align-items: center; gap: var(--space-sm);
 }
-.admin-section { margin-bottom: 24px; }
+
+.admin-section {
+  margin-bottom: var(--space-xl);
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  box-shadow: var(--crayon-shadow-sm);
+  border: 2px solid rgba(0,0,0,0.04);
+}
 .admin-section h3 {
-  font-size: var(--font-md); color: var(--text-secondary); margin-bottom: 10px; font-weight: 600;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  letter-spacing: 1.5px;
+  color: #5A4A3A;
+  margin-bottom: var(--space-md);
 }
 
-/* Buttons */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 14px 24px; border-radius: 50px; border: none;
-  font-size: var(--font-md); font-family: inherit; font-weight: 600;
-  cursor: pointer; transition: transform 0.1s, background 0.2s;
-}
-.btn:active { transform: scale(0.96); }
-.btn-primary { background: var(--warm-orange); color: #fff; }
-.btn-secondary { background: #f0e6db; color: var(--text); }
-.btn-danger { background: var(--danger); color: #fff; }
-.btn-block { width: 100%; justify-content: center; }
-.btn-sm { padding: 8px 16px; font-size: var(--font-sm); }
-
-/* Forms */
-.form-group { margin-bottom: 14px; }
+/* Form elements in admin */
+.form-group { margin-bottom: var(--space-md); }
 .form-group label {
-  display: block; font-size: var(--font-sm); font-weight: 600;
-  color: var(--text-secondary); margin-bottom: 6px;
+  display: block;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: #6B5D50;
+  margin-bottom: var(--space-xs);
 }
 .form-input {
-  width: 100%; padding: 14px 18px; border-radius: var(--radius-sm);
-  border: 2px solid #e8dbce; font-size: var(--font-md);
-  font-family: inherit; background: #fff; color: var(--text);
-  transition: border-color 0.2s; -webkit-appearance: none;
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: var(--radius-sm);
+  border: 2px solid rgba(0,0,0,0.08);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  background: var(--paper);
+  color: #3D3028;
+  transition: border-color var(--duration-fast);
+  -webkit-appearance: none;
 }
-.form-input:focus { outline: none; border-color: var(--warm-orange); }
+.form-input:focus { outline: none; border-color: var(--mint); }
 
-/* Video item in admin list */
+/* Admin video list items */
 .admin-video-item {
-  display: flex; align-items: center; gap: 12px; padding: 14px 16px;
-  background: #fff; border-radius: var(--radius-sm); margin-bottom: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  display: flex; align-items: center; gap: var(--space-md);
+  padding: var(--space-md);
+  background: var(--paper);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-sm);
+  border: 1.5px solid rgba(0,0,0,0.05);
+  transition: box-shadow var(--duration-fast);
+  cursor: grab;
 }
-.admin-video-item .drag-handle { cursor: grab; color: var(--text-muted); font-size: 20px; padding: 4px; }
+.admin-video-item:active { cursor: grabbing; }
+.admin-video-item .drag-handle {
+  color: #9B8E80; font-size: 22px; padding: 4px; cursor: grab;
+  font-family: var(--font-display);
+}
+.admin-video-item .item-icon {
+  font-size: 28px; flex-shrink: 0;
+}
 .admin-video-item .item-info { flex: 1; min-width: 0; }
 .admin-video-item .item-title {
-  font-size: var(--font-md); font-weight: 600;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  letter-spacing: 1px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.admin-video-item .item-type { font-size: var(--font-sm); color: var(--text-muted); }
+.admin-video-item .item-meta {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: #9B8E80;
+  margin-top: 2px;
+}
 .admin-video-item .item-delete {
   background: none; border: none; font-size: 22px; cursor: pointer;
-  color: var(--danger); padding: 8px; border-radius: 8px; transition: background 0.2s;
+  padding: 8px; border-radius: 8px;
+  transition: background var(--duration-fast);
+  color: var(--coral);
 }
-.admin-video-item .item-delete:active { background: rgba(209, 82, 82, 0.1); }
+.admin-video-item .item-delete:active { background: rgba(242,140,140,0.1); }
 
-.admin-bottom {
-  position: sticky; bottom: 0; background: var(--bg); padding: 16px 20px;
-  border-top: 1px solid #e8dbce; display: flex; gap: 12px; flex-shrink: 0;
-}
-
-/* User info bar in admin */
 .admin-user-bar {
   display: flex; align-items: center; justify-content: space-between;
-  font-size: var(--font-sm); color: var(--text-muted);
-  padding: 8px 0; margin-bottom: 16px;
-  border-bottom: 1px solid #f0e6db;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: #9B8E80;
+  padding: var(--space-sm) 0;
+  margin-bottom: var(--space-md);
+  border-bottom: 2px dashed rgba(0,0,0,0.06);
 }
 .admin-user-bar .logout-btn {
-  background: none; border: 1px solid var(--text-muted);
-  color: var(--text-muted); font-size: 0.75rem; padding: 4px 12px;
-  border-radius: 20px; cursor: pointer; font-family: inherit;
+  background: none;
+  border: 1.5px solid #9B8E80;
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: #9B8E80;
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--duration-fast);
 }
+.admin-user-bar .logout-btn:hover { border-color: var(--coral); color: var(--coral); }
 
-/* ===== Toast ===== */
-.toast {
-  position: fixed; top: 20px; left: 50%;
-  transform: translateX(-50%) translateY(-120px);
-  background: #3d2c1e; color: #fff; padding: 14px 28px;
-  border-radius: 50px; font-size: var(--font-md); font-weight: 600;
-  z-index: 200; pointer-events: none;
-  transition: transform 0.3s ease; box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+.admin-bottom {
+  display: flex; gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--paper);
+  border-top: 2px dashed rgba(0,0,0,0.06);
+  flex-shrink: 0;
 }
-.toast.show { transform: translateX(-50%) translateY(0); }
+.admin-bottom .btn { flex: 1; }
 
-/* ===== Upload progress ===== */
+/* Progress bar — sketchy */
 .progress-bar-wrapper {
-  margin-top: 12px; background: #e8dbce; border-radius: 10px;
+  margin-top: var(--space-md);
+  background: rgba(0,0,0,0.04);
+  border-radius: 10px;
   height: 8px; overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.06);
 }
 .progress-bar-fill {
-  height: 100%; background: var(--warm-orange); border-radius: 10px;
-  width: 0%; transition: width 0.3s ease;
+  height: 100%;
+  background: var(--mint);
+  border-radius: 10px;
+  width: 0%;
+  transition: width 0.4s var(--ease-out);
 }
 
-/* ===== Responsive ===== */
+/* Empty admin hint */
+.admin-empty-hint {
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: #9B8E80;
+  padding: var(--space-xl);
+}
+
+/* ================================================================
+   RESPONSIVE — mobile-first, 3 breakpoints
+   ================================================================ */
 @media (max-width: 400px) {
-  .video-card { padding: 20px; gap: 14px; min-height: 76px; }
-  .video-card .card-icon { width: 44px; height: 44px; font-size: 22px; border-radius: 12px; }
-  .player-ctrl-btn { width: 64px; height: 64px; font-size: 28px; }
-  .player-ctrl-btn.play-pause { width: 72px; height: 72px; font-size: 32px; }
+  .video-card { padding: var(--space-md); gap: var(--space-sm); min-height: 72px; }
+  .video-card .card-play-icon { width: 48px; height: 48px; font-size: 22px; }
+  .video-card .card-title { font-size: var(--text-lg); }
+  .player-ctrl-btn { width: 60px; height: 60px; font-size: 26px; }
+  .player-ctrl-btn.play-pause { width: 72px; height: 72px; font-size: 28px; }
+  .login-card { padding: var(--space-lg) var(--space-md); }
+  .admin-section { padding: var(--space-md); }
 }
+
 @media (min-width: 768px) {
-  .video-list-scroll { padding: 12px 32px 100px; }
+  .video-list-scroll { padding: var(--space-md) var(--space-xl) 120px; }
   .video-card { min-height: 100px; }
+  .login-leaf-deco { width: 160px; height: 50px; }
 }
+
+/* ================================================================
+   DARK MODE — @media prefers-color-scheme
+   ================================================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper:      #1E1B18;
+    --paper-warm: #25221E;
+    --card-bg:    #2A2622;
+  }
+  body { color: #E0D8CC; }
+  body::before {
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px),
+      repeating-linear-gradient(90deg, transparent, transparent 1px, rgba(255,255,255,0.01) 1px, rgba(255,255,255,0.01) 2px);
+  }
+  .login-card, .video-card, .admin-section, .toast { background: var(--card-bg); border-color: rgba(255,255,255,0.06); }
+  .login-card .form-input, .form-input { background: #2A2622; color: #E0D8CC; border-color: rgba(255,255,255,0.08); }
+  .login-view h1, .elderly-header h1, .admin-container h2 { color: var(--mint-light); }
+  .btn { background: var(--card-bg); color: #E0D8CC; }
+  .btn-secondary { background: #33302A; }
+  .admin-video-item { background: #2A2622; border-color: rgba(255,255,255,0.05); }
+  .video-card .card-title { color: #E0D8CC; }
+  .video-card .card-type-badge { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.06); }
+  .admin-bottom { background: var(--paper); border-color: rgba(255,255,255,0.06); }
+  .sync-indicator { background: var(--card-bg); border-color: rgba(255,255,255,0.08); }
+  .admin-user-bar { border-color: rgba(255,255,255,0.06); }
+}
+
+/* ================================================================
+   REDUCED MOTION — accessibility (UI/UX Design Review)
+   ================================================================ */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 </style>
 </head>
 <body>
 
+<!-- ============================================================
+     SVG FILTERS — frontend-design rough paper edge
+     ============================================================ -->
+<svg style="display:none" aria-hidden="true">
+  <defs>
+    <filter id="rough-paper" x="-2%" y="-2%" width="104%" height="104%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2.5" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <filter id="crayon-line" x="-2%" y="-2%" width="104%" height="104%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="3" result="noise" />
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.5" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+    <!-- Decorative leaf doodle SVG -->
+    <g id="leaf-doodle">
+      <path d="M0,12 Q10,-4 24,0 Q16,8 24,16 Q10,20 0,12Z"
+            fill="none" stroke="#78C2A4" stroke-width="1.8"
+            stroke-dasharray="18,2,4,2" stroke-linecap="round" opacity="0.6"/>
+    </g>
+    <g id="vine-doodle">
+      <path d="M0,8 Q6,-2 14,4 Q22,-4 28,6 Q34,-2 40,8"
+            fill="none" stroke="#78C2A4" stroke-width="1.6"
+            stroke-dasharray="12,3,5,3" stroke-linecap="round" opacity="0.45"/>
+    </g>
+  </defs>
+</svg>
+
 <div class="app" id="app">
 
-  <!-- ===== Login View ===== -->
+  <!-- ===== LOGIN VIEW ===== -->
   <div class="view active" id="loginView">
     <div class="login-view" style="flex:1;display:flex">
+      <!-- Hand-drawn vine decoration -->
+      <svg class="login-leaf-deco" viewBox="0 0 160 40" aria-hidden="true">
+        <use href="#vine-doodle" x="10" y="10" />
+        <use href="#leaf-doodle" x="110" y="8" transform="scale(0.8) translate(30, 5)" />
+      </svg>
+
       <div class="login-icon">💃</div>
       <h1>外婆健身操</h1>
       <p class="login-subtitle">登录后可同步视频列表</p>
@@ -446,7 +887,7 @@ html, body {
                  placeholder="输入密码" autocomplete="current-password">
         </div>
         <p class="login-error" id="loginError"></p>
-        <button class="btn-login" id="loginBtn">🔐 登录</button>
+        <button class="btn btn-primary btn-block" id="loginBtn" style="width:100%">🔐 登录</button>
       </div>
 
       <div class="login-footer">
@@ -457,9 +898,11 @@ html, body {
     </div>
   </div>
 
-  <!-- ===== Elderly Mode ===== -->
+  <!-- ===== ELDERLY MODE ===== -->
   <div class="view" id="elderlyView">
     <div class="elderly-header">
+      <span class="deco-left">🌿</span>
+      <span class="deco-right">🍃</span>
       <h1 id="elderlyTitle">💃 外婆健身操</h1>
       <p class="elderly-subtitle" id="videoCountHint"></p>
     </div>
@@ -480,7 +923,7 @@ html, body {
     </div>
   </div>
 
-  <!-- ===== Admin Mode ===== -->
+  <!-- ===== ADMIN MODE ===== -->
   <div class="view" id="adminView">
     <div class="admin-container">
       <h2>⚙️ 视频管理</h2>
@@ -520,18 +963,18 @@ html, body {
 
       <!-- Video management list -->
       <div class="admin-section">
-        <h3>📋 视频列表（长按拖拽排序）</h3>
+        <h3>📋 视频列表（拖拽排序）</h3>
         <div id="adminVideoList"></div>
-        <p style="color:var(--text-muted);font-size:0.8rem;text-align:center" id="emptyAdminHint">暂无视频，请添加上方添加</p>
+        <p class="admin-empty-hint" id="emptyAdminHint">暂无视频，请在上方添加</p>
       </div>
     </div>
 
     <div class="admin-bottom">
-      <button class="btn btn-secondary" id="adminDoneBtn" style="flex:1">✅ 完成</button>
+      <button class="btn btn-primary" id="adminDoneBtn" style="flex:1">✅ 完成</button>
     </div>
   </div>
 
-  <!-- ===== Toast ===== -->
+  <!-- ===== TOAST ===== -->
   <div class="toast" id="toast"></div>
 
 </div>
@@ -543,16 +986,16 @@ html, body {
 (function() {
   'use strict';
 
-  // ============================
-  //  Supabase Init
-  // ============================
+  // ================================================================
+  //  SUPABASE INIT
+  // ================================================================
   const SUPABASE_URL = 'https://mbkdigtofgmdkepwsrve.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ia2RpZ3RvZmdtZGtlcHdzcnZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2OTMyMjcsImV4cCI6MjA5NzI2OTIyN30.BGlRJJbL6BvcZC1XrZTeN_3AOiiQgiAKniXfREunzeQ';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // ============================
-  //  IndexedDB Adapter
-  // ============================
+  // ================================================================
+  //  INDEXEDDB ADAPTER
+  // ================================================================
   const IDB_NAME = 'GrandmaFitnessDB';
   const IDB_VERSION = 1;
   const IDB_STORE = 'videos';
@@ -601,9 +1044,9 @@ html, body {
     });
   }
 
-  // ============================
-  //  Supabase Video Operations
-  // ============================
+  // ================================================================
+  //  SUPABASE VIDEO OPERATIONS
+  // ================================================================
   async function loadVideosFromSupabase() {
     const { data, error } = await supabase
       .from('videos')
@@ -658,71 +1101,56 @@ html, body {
       user_id: currentUser.id,
       updated_at: new Date().toISOString()
     }));
-
-    // Delete all existing, then insert all (atomic-ish via upsert)
     const { error } = await supabase.from('videos').upsert(rows);
     if (error) throw error;
   }
 
-  // ============================
-  //  Realtime Subscription
-  // ============================
+  // ================================================================
+  //  REALTIME SUBSCRIPTION
+  // ================================================================
   let realtimeChannel = null;
 
   function subscribeToChanges() {
-    if (realtimeChannel) {
-      supabase.removeChannel(realtimeChannel);
-    }
-
+    if (realtimeChannel) { supabase.removeChannel(realtimeChannel); }
     realtimeChannel = supabase
       .channel('videos-changes')
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'videos', filter: `user_id=eq.${currentUser.id}` },
         async () => {
-          // Reload videos from Supabase when any change happens
           try {
             const videos = await loadVideosFromSupabase();
-            if (currentMode === 'elderly') {
-              renderElderlyList(videos);
-            } else if (currentMode === 'admin') {
-              renderAdminList(videos);
-            }
-            showSyncIndicator('已同步');
-          } catch(e) {
-            showSyncIndicator('同步失败');
-          }
+            if (currentMode === 'elderly') { renderElderlyList(videos); }
+            else if (currentMode === 'admin') { renderAdminList(videos); }
+            showSyncStatus('已同步');
+          } catch(e) { showSyncStatus('同步失败'); }
         }
       )
       .subscribe();
   }
 
   function unsubscribeFromChanges() {
-    if (realtimeChannel) {
-      supabase.removeChannel(realtimeChannel);
-      realtimeChannel = null;
-    }
+    if (realtimeChannel) { supabase.removeChannel(realtimeChannel); realtimeChannel = null; }
   }
 
-  function showSyncIndicator(status) {
-    const el = $('#syncIndicator');
+  function showSyncStatus(status) {
+    const el = $('syncIndicator');
     if (!el) return;
+    el.style.display = 'block';
     if (status === 'syncing') {
-      el.style.display = 'block';
       el.className = 'sync-indicator syncing';
       el.textContent = '☁️ 同步中...';
     } else {
-      el.style.display = 'block';
       el.className = 'sync-indicator synced';
       el.textContent = '✅ 已同步';
-      setTimeout(() => { el.style.display = 'none'; }, 3000);
+      setTimeout(() => { el.style.display = 'none'; }, 3500);
     }
   }
 
-  // ============================
-  //  App State
-  // ============================
+  // ================================================================
+  //  APP STATE
+  // ================================================================
   let meta = { videos: [] };
-  let currentMode = 'login'; // 'login' | 'elderly' | 'admin'
+  let currentMode = 'login';
   let currentUser = null;
   let titleClickCount = 0;
   let titleClickTimer = null;
@@ -733,51 +1161,17 @@ html, body {
   let playerVideoEl = null;
   let isPlaying = false;
 
-  // ============================
-  //  DOM References
-  // ============================
-  const $ = (sel) => document.querySelector(sel);
+  // ================================================================
+  //  DOM HELPERS
+  // ================================================================
+  const $ = (id) => document.getElementById(id);
 
-  const loginView = $('#loginView');
-  const loginEmail = $('#loginEmail');
-  const loginPassword = $('#loginPassword');
-  const loginError = $('#loginError');
-  const loginBtn = $('#loginBtn');
-  const showSignupLink = $('#showSignupLink');
-  const skipLoginLink = $('#skipLoginLink');
-
-  const elderlyView = $('#elderlyView');
-  const elderlyTitle = $('#elderlyTitle');
-  const videoCountHint = $('#videoCountHint');
-  const videoList = $('#videoList');
-  const syncIndicator = $('#syncIndicator');
-  const playerContainer = $('#playerContainer');
-  const playerVideoWrapper = $('#playerVideoWrapper');
-  const playerBackBtn = $('#playerBackBtn');
-  const playerPlayPauseBtn = $('#playerPlayPauseBtn');
-
-  const adminView = $('#adminView');
-  const adminUserEmail = $('#adminUserEmail');
-  const adminLogoutBtn = $('#adminLogoutBtn');
-  const adminVideoList = $('#adminVideoList');
-  const emptyAdminHint = $('#emptyAdminHint');
-  const addLinkBtn = $('#addLinkBtn');
-  const linkTitleInput = $('#linkTitle');
-  const linkUrlInput = $('#linkUrl');
-  const uploadBtn = $('#uploadBtn');
-  const fileInput = $('#fileInput');
-  const uploadTitleInput = $('#uploadTitle');
-  const progressWrapper = $('#progressWrapper');
-  const progressFill = $('#progressFill');
-  const adminDoneBtn = $('#adminDoneBtn');
-
-  const toast = $('#toast');
-
-  // ============================
-  //  Toast
-  // ============================
+  // ================================================================
+  //  TOAST — spring-animated notification
+  // ================================================================
   let toastTimer = null;
-  function showToast(msg, duration = 2000) {
+  function showToast(msg, duration = 2200) {
+    const toast = $('toast');
     if (toastTimer) clearTimeout(toastTimer);
     toast.textContent = msg;
     toast.classList.add('show');
@@ -787,95 +1181,72 @@ html, body {
     }, duration);
   }
 
-  // ============================
-  //  Auth
-  // ============================
+  // ================================================================
+  //  AUTH
+  // ================================================================
   let signupMode = false;
 
   async function doLogin() {
-    const email = loginEmail.value.trim();
-    const password = loginPassword.value.trim();
+    const emailEl = $('loginEmail');
+    const passEl = $('loginPassword');
+    const errEl = $('loginError');
+    const btnEl = $('loginBtn');
 
-    if (!email) { loginError.textContent = '请输入邮箱地址'; return; }
-    if (!password) { loginError.textContent = '请输入密码'; return; }
-    if (password.length < 6) { loginError.textContent = '密码至少6位'; return; }
+    const email = emailEl.value.trim();
+    const password = passEl.value.trim();
 
-    loginBtn.disabled = true;
-    loginError.textContent = '';
+    if (!email) { errEl.textContent = '请输入邮箱地址'; return; }
+    if (!password) { errEl.textContent = '请输入密码'; return; }
+    if (password.length < 6) { errEl.textContent = '密码至少6位'; return; }
+
+    btnEl.disabled = true;
+    errEl.textContent = '';
 
     try {
       if (signupMode) {
-        // Sign up
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: window.location.href }
-        });
+        const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.href } });
         if (error) throw error;
         if (data.user) {
           showToast('✅ 账号创建成功！');
           signupMode = false;
-          // Auto-login after signup (user might need email confirmation if enabled)
-          loginError.textContent = '';
-          showSignupLink.textContent = '首次使用？创建账号';
+          $('showSignupLink').textContent = '首次使用？创建账号';
         }
       }
-
-      // Sign in
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-
       currentUser = data.user;
       onLoginSuccess();
     } catch(err) {
-      loginError.textContent = getAuthErrorMessage(err);
+      errEl.textContent = getAuthErrorMessage(err);
     } finally {
-      loginBtn.disabled = false;
+      btnEl.disabled = false;
     }
   }
 
   function getAuthErrorMessage(err) {
     const msg = err.message || String(err);
-    if (msg.includes('Invalid login credentials') || msg.includes('Invalid Login'))
-      return '邮箱或密码错误，请重试';
-    if (msg.includes('Email not confirmed'))
-      return '邮箱尚未验证，请先确认邮箱';
-    if (msg.includes('User already registered') || msg.includes('already been registered'))
-      return '该邮箱已注册，请直接登录';
-    if (msg.includes('password') && msg.includes('weak'))
-      return '密码太弱，请使用6位以上密码';
-    if (msg.includes('valid email'))
-      return '请输入有效的邮箱地址';
-    if (msg.includes('rate') || msg.includes('limit'))
-      return '请求太频繁，请稍后再试';
-    if (msg.includes('network') || msg.includes('fetch'))
-      return '网络连接失败，请检查网络';
-    return `登录失败：${msg}`;
+    if (msg.includes('Invalid login credentials') || msg.includes('Invalid Login')) return '邮箱或密码错误，请重试';
+    if (msg.includes('Email not confirmed')) return '邮箱尚未验证，请先确认邮箱';
+    if (msg.includes('User already registered') || msg.includes('already been registered')) return '该邮箱已注册，请直接登录';
+    if (msg.includes('password') && msg.includes('weak')) return '密码太弱，请使用6位以上密码';
+    if (msg.includes('valid email')) return '请输入有效的邮箱地址';
+    if (msg.includes('rate') || msg.includes('limit')) return '请求太频繁，请稍后再试';
+    if (msg.includes('network') || msg.includes('fetch')) return '网络连接失败，请检查网络';
+    return '登录失败：' + msg;
   }
 
   async function onLoginSuccess() {
-    loginError.textContent = '';
-    loginPassword.value = '';
-    loginBtn.disabled = false;
-
-    try {
-      // Load videos from Supabase
-      meta.videos = await loadVideosFromSupabase();
-    } catch(e) {
-      console.warn('Failed to load videos from Supabase, using empty list:', e);
-      meta.videos = [];
-    }
-
-    // Subscribe to real-time changes
+    $('loginError').textContent = '';
+    $('loginPassword').value = '';
+    $('loginBtn').disabled = false;
+    try { meta.videos = await loadVideosFromSupabase(); }
+    catch(e) { console.warn('Failed to load videos:', e); meta.videos = []; }
     subscribeToChanges();
-
-    // Show elderly view
     switchToElderly();
   }
 
   async function doLogout() {
     if (!confirm('确定要退出登录吗？\n退出后无法自动同步视频列表。')) return;
-
     unsubscribeFromChanges();
     await supabase.auth.signOut();
     currentUser = null;
@@ -883,74 +1254,64 @@ html, body {
     switchToLogin();
   }
 
-  // ============================
-  //  View Switching
-  // ============================
+  // ================================================================
+  //  VIEW SWITCHING
+  // ================================================================
   function switchToLogin() {
     currentMode = 'login';
-    loginView.classList.add('active');
-    elderlyView.classList.remove('active');
-    adminView.classList.remove('active');
+    $('loginView').classList.add('active');
+    $('elderlyView').classList.remove('active');
+    $('adminView').classList.remove('active');
     closePlayer();
-    loginEmail.value = currentUser ? currentUser.email : '';
-    // If user has an active session, try to restore
-    if (currentUser) {
-      loginError.textContent = '';
-    }
+    if (currentUser) $('loginEmail').value = currentUser.email;
   }
 
   function switchToElderly() {
     currentMode = 'elderly';
-    loginView.classList.remove('active');
-    elderlyView.classList.add('active');
-    adminView.classList.remove('active');
+    $('loginView').classList.remove('active');
+    $('elderlyView').classList.add('active');
+    $('adminView').classList.remove('active');
     closePlayer();
     renderElderlyList(meta.videos);
   }
 
   function switchToAdmin() {
-    if (!currentUser) {
-      showToast('请先登录');
-      switchToLogin();
-      return;
-    }
+    if (!currentUser) { showToast('请先登录'); switchToLogin(); return; }
     currentMode = 'admin';
-    elderlyView.classList.remove('active');
-    adminView.classList.add('active');
+    $('elderlyView').classList.remove('active');
+    $('adminView').classList.add('active');
     closePlayer();
-    adminUserEmail.textContent = '👤 ' + currentUser.email;
+    $('adminUserEmail').textContent = '👤 ' + currentUser.email;
     renderAdminList(meta.videos);
   }
 
-  // ============================
-  //  Elderly Mode: Render Video List
-  // ============================
+  // ================================================================
+  //  ELDERLY MODE: RENDER
+  // ================================================================
   function renderElderlyList(videos) {
     const sorted = (videos || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+    const hintEl = $('videoCountHint');
+    const listEl = $('videoList');
 
     if (sorted.length === 0) {
-      videoCountHint.textContent = '';
-      videoList.innerHTML = `
-        <div class="empty-state">
-          <div class="icon">📭</div>
-          <p>还没有视频哦～<br>让家人帮忙添加吧</p>
-        </div>`;
+      if (hintEl) hintEl.textContent = '';
+      listEl.innerHTML = '<div class="empty-state"><div class="empty-icon">🌿</div><p>还没有视频哦～<br>让家人帮忙添加吧</p></div>';
       return;
     }
 
-    videoCountHint.textContent = `共 ${sorted.length} 个视频`;
-    videoList.innerHTML = sorted.map((v, i) => `
-      <div class="video-card" data-video-id="${v.id}" data-index="${i}">
-        <div class="card-icon">🎬</div>
+    if (hintEl) hintEl.textContent = '共 ' + sorted.length + ' 个视频';
+    listEl.innerHTML = sorted.map((v) => `
+      <div class="video-card" data-video-id="${v.id}">
+        <div class="card-play-icon">▶</div>
         <div class="card-info">
           <div class="card-title">${escapeHtml(v.title)}</div>
-          <div class="card-duration">${getVideoTypeLabel(v)}</div>
+          <span class="card-type-badge">${getVideoTypeLabel(v)}</span>
         </div>
-        <div class="card-arrow">▸</div>
+        <div class="card-arrow">❯</div>
       </div>
     `).join('');
 
-    videoList.querySelectorAll('.video-card').forEach(card => {
+    listEl.querySelectorAll('.video-card').forEach(card => {
       card.addEventListener('click', () => {
         const vid = card.dataset.videoId;
         const video = meta.videos.find(v => v.id === vid);
@@ -965,68 +1326,54 @@ html, body {
     return div.innerHTML;
   }
 
-  // ============================
-  //  Video Player
-  // ============================
+  // ================================================================
+  //  VIDEO PLAYER
+  // ================================================================
   async function openPlayer(video) {
     currentPlayingVideo = video;
-    playerVideoWrapper.innerHTML = '';
+    const wrapper = $('playerVideoWrapper');
+    wrapper.innerHTML = '';
     playerVideoEl = null;
     isPlaying = false;
-    playerPlayPauseBtn.textContent = '▶️';
-    playerContainer.classList.add('active');
+    $('playerPlayPauseBtn').textContent = '▶️';
+    $('playerContainer').classList.add('active');
 
     if (video.type === 'local') {
       try {
         showToast('正在加载视频...', 1500);
         const blob = await idbGet(video.localId);
         if (!blob) {
-          playerVideoWrapper.innerHTML = `<div class="unsupported-hint">视频文件找不到了 😢<br><small>请让家人重新添加</small></div>`;
+          wrapper.innerHTML = '<div class="unsupported-hint"><p>视频文件找不到了 😢</p><p style="font-size:var(--text-sm);color:rgba(255,255,255,0.5);margin-top:8px">请让家人重新添加</p></div>';
           return;
         }
         const url = URL.createObjectURL(blob);
         createVideoElement(url);
-      } catch(e) {
-        playerVideoWrapper.innerHTML = `<div class="unsupported-hint">视频加载失败 😢</div>`;
-      }
+      } catch(e) { wrapper.innerHTML = '<div class="unsupported-hint"><p>视频加载失败 😢</p></div>'; }
     } else if (video.type === 'link') {
       const src = video.source;
       if (isBilibiliUrl(src)) {
         const bvid = extractBvid(src);
         if (bvid) {
-          playerVideoWrapper.innerHTML = `
-            <iframe src="https://player.bilibili.com/player.html?bvid=${bvid}&high_quality=1&autoplay=1"
-              allowfullscreen allow="autoplay; fullscreen"
-              sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>`;
+          wrapper.innerHTML = '<iframe src="https://player.bilibili.com/player.html?bvid=' + bvid + '&high_quality=1&autoplay=1" allowfullscreen allow="autoplay; fullscreen" sandbox="allow-scripts allow-same-origin allow-presentation"></iframe>';
           isPlaying = true;
-          playerPlayPauseBtn.textContent = '⏸️';
-        } else {
-          showExternalLinkView(src);
-          playerPlayPauseBtn.textContent = '👆';
-        }
+          $('playerPlayPauseBtn').textContent = '⏸️';
+        } else { showExternalLinkView(src); }
       } else if (isYouTubeUrl(src)) {
         const videoId = extractYouTubeId(src);
         if (videoId) {
-          playerVideoWrapper.innerHTML = `
-            <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1"
-              allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>`;
+          wrapper.innerHTML = '<iframe src="https://www.youtube.com/embed/' + videoId + '?autoplay=1&playsinline=1" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>';
           isPlaying = true;
-          playerPlayPauseBtn.textContent = '⏸️';
-        } else {
-          showExternalLinkView(src);
-          playerPlayPauseBtn.textContent = '👆';
-        }
+          $('playerPlayPauseBtn').textContent = '⏸️';
+        } else { showExternalLinkView(src); }
       } else if (isDirectVideoUrl(src)) {
         createVideoElement(src);
-      } else {
-        showExternalLinkView(src);
-        playerPlayPauseBtn.textContent = '👆';
-      }
+      } else { showExternalLinkView(src); }
     }
   }
 
   function createVideoElement(src) {
-    playerVideoWrapper.innerHTML = '';
+    const wrapper = $('playerVideoWrapper');
+    wrapper.innerHTML = '';
     const video = document.createElement('video');
     video.src = src;
     video.controls = false;
@@ -1035,128 +1382,70 @@ html, body {
     video.setAttribute('playsinline', '');
     video.play().then(() => {
       isPlaying = true;
-      playerPlayPauseBtn.textContent = '⏸️';
+      $('playerPlayPauseBtn').textContent = '⏸️';
     }).catch(() => {
       isPlaying = false;
-      playerPlayPauseBtn.textContent = '▶️';
+      $('playerPlayPauseBtn').textContent = '▶️';
     });
-    video.addEventListener('ended', () => {
-      isPlaying = false;
-      playerPlayPauseBtn.textContent = '🔄';
-    });
-    video.addEventListener('play', () => {
-      isPlaying = true;
-      playerPlayPauseBtn.textContent = '⏸️';
-    });
-    video.addEventListener('pause', () => {
-      isPlaying = false;
-      playerPlayPauseBtn.textContent = '▶️';
-    });
-    playerVideoWrapper.appendChild(video);
+    video.addEventListener('ended', () => { isPlaying = false; $('playerPlayPauseBtn').textContent = '🔄'; });
+    video.addEventListener('play', () => { isPlaying = true; $('playerPlayPauseBtn').textContent = '⏸️'; });
+    video.addEventListener('pause', () => { isPlaying = false; $('playerPlayPauseBtn').textContent = '▶️'; });
+    wrapper.appendChild(video);
     playerVideoEl = video;
   }
 
   function showExternalLinkView(url) {
-    const isWeChat = isWeChatVideoUrl(url);
-    const platformName = getPlatformName(url);
-    if (isWeChat) {
-      playerVideoWrapper.innerHTML = `
-        <div class="unsupported-hint">
-          <div style="font-size:56px;margin-bottom:16px;">💬</div>
-          <p style="font-size:var(--font-lg);font-weight:600;color:#fff;margin-bottom:8px;">微信视频号</p>
-          <p style="color:rgba(255,255,255,0.6);font-size:var(--font-sm);margin-bottom:24px;">这个视频只能在微信里看</p>
-          <p style="color:rgba(255,255,255,0.8);font-size:var(--font-md);margin-bottom:28px;line-height:1.6;">
-            让家人帮忙<br>把视频下载后上传到这里
-          </p>
-          <p style="color:rgba(255,255,255,0.35);font-size:0.8rem;">
-            （返回后点标题5次进入管理模式）
-          </p>
-        </div>`;
+    const wrapper = $('playerVideoWrapper');
+    const isWx = isWeChatVideoUrl(url);
+    const pname = getPlatformName(url);
+
+    if (isWx) {
+      wrapper.innerHTML = '<div class="unsupported-hint"><div style="font-size:56px;margin-bottom:16px">💬</div><p style="font-family:var(--font-display);font-size:var(--text-xl);color:#fff;letter-spacing:2px;margin-bottom:8px">微信视频号</p><p style="color:rgba(255,255,255,0.5);font-size:var(--text-sm);margin-bottom:24px">这个视频只能在微信里看</p><p style="color:rgba(255,255,255,0.7);font-size:var(--text-md);margin-bottom:28px;line-height:1.6">让家人帮忙<br>把视频下载后上传到这里</p></div>';
     } else {
-      playerVideoWrapper.innerHTML = `
-        <div class="unsupported-hint">
-          <div style="font-size:56px;margin-bottom:16px;">📺</div>
-          <p style="font-size:var(--font-lg);font-weight:600;color:#fff;margin-bottom:8px;">${escapeHtml(platformName)} 视频</p>
-          <p style="color:rgba(255,255,255,0.6);font-size:var(--font-sm);margin-bottom:20px;">需在 ${escapeHtml(platformName)} App 中观看</p>
-          <a class="btn btn-primary" href="${escapeHtml(url)}" target="_blank" rel="noopener"
-             style="font-size:var(--font-lg);padding:20px 48px;text-decoration:none;display:inline-block;">
-            👆 点这里打开视频
-          </a>
-          <p style="color:rgba(255,255,255,0.4);font-size:0.8rem;margin-top:20px;">打开后如要返回，请切换回浏览器</p>
-        </div>`;
+      wrapper.innerHTML = '<div class="unsupported-hint"><div style="font-size:56px;margin-bottom:16px">📺</div><p style="font-family:var(--font-display);font-size:var(--text-xl);color:#fff;letter-spacing:2px;margin-bottom:8px">' + escapeHtml(pname) + ' 视频</p><p style="color:rgba(255,255,255,0.5);font-size:var(--text-sm);margin-bottom:20px">需在 ' + escapeHtml(pname) + ' App 中观看</p><a href="' + escapeHtml(url) + '" target="_blank" rel="noopener" style="font-family:var(--font-display);font-size:var(--text-xl);letter-spacing:2px;padding:18px 40px;text-decoration:none;display:inline-block;background:var(--mint);color:#fff;border-radius:var(--radius-pill);border:2px solid var(--mint-dark);">👆 点这里打开视频</a></div>';
     }
   }
 
   function closePlayer() {
     if (playerVideoEl) {
       playerVideoEl.pause();
-      if (playerVideoEl.src.startsWith('blob:')) {
-        URL.revokeObjectURL(playerVideoEl.src);
-      }
+      if (playerVideoEl.src.startsWith('blob:')) URL.revokeObjectURL(playerVideoEl.src);
       playerVideoEl = null;
     }
-    playerVideoWrapper.innerHTML = '';
-    playerContainer.classList.remove('active');
+    $('playerVideoWrapper').innerHTML = '';
+    $('playerContainer').classList.remove('active');
     currentPlayingVideo = null;
     isPlaying = false;
   }
 
   function togglePlayPause() {
     if (!currentPlayingVideo) return;
-    const iframe = playerVideoWrapper.querySelector('iframe');
-    if (iframe) {
-      showToast('在线视频无法在此暂停，请点击视频内部控制');
-      return;
-    }
-    const extLink = playerVideoWrapper.querySelector('.unsupported-hint a');
-    if (extLink && currentPlayingVideo.type === 'link') {
-      extLink.click();
-      return;
-    }
+    const iframe = $('playerVideoWrapper').querySelector('iframe');
+    if (iframe) { showToast('在线视频无法在此暂停，请点击视频内部控制'); return; }
+    const extLink = $('playerVideoWrapper').querySelector('.unsupported-hint a');
+    if (extLink && currentPlayingVideo.type === 'link') { extLink.click(); return; }
     if (playerVideoEl) {
-      if (isPlaying) { playerVideoEl.pause(); }
-      else { playerVideoEl.play().catch(() => {}); }
+      if (isPlaying) playerVideoEl.pause();
+      else playerVideoEl.play().catch(() => {});
     }
   }
 
-  // ============================
-  //  URL Detection Helpers
-  // ============================
+  // ================================================================
+  //  URL DETECTION HELPERS
+  // ================================================================
   function isBilibiliUrl(url) { return /bilibili\.com/i.test(url); }
   function extractBvid(url) { const m = url.match(/BV[a-zA-Z0-9]+/); return m ? m[0] : null; }
   function isYouTubeUrl(url) { return /(youtube\.com|youtu\.be)/i.test(url); }
   function extractYouTubeId(url) {
-    const patterns = [
-      /[?&]v=([a-zA-Z0-9_-]{11})/,
-      /youtu\.be\/([a-zA-Z0-9_-]{11})/,
-      /\/embed\/([a-zA-Z0-9_-]{11})/,
-      /\/v\/([a-zA-Z0-9_-]{11})/
-    ];
-    for (const p of patterns) {
-      const m = url.match(p);
-      if (m) return m[1];
-    }
+    const patterns = [/[?&]v=([a-zA-Z0-9_-]{11})/, /youtu\.be\/([a-zA-Z0-9_-]{11})/, /\/embed\/([a-zA-Z0-9_-]{11})/, /\/v\/([a-zA-Z0-9_-]{11})/];
+    for (const p of patterns) { const m = url.match(p); if (m) return m[1]; }
     return null;
   }
   function isDirectVideoUrl(url) {
-    try {
-      const pathname = new URL(url).pathname.toLowerCase();
-      return /\.(mp4|m3u8|webm|ogg|mov|mkv|avi|ts|flv)(\?|#|$)/.test(pathname)
-          || /\.(mp4|m3u8|webm|ogg|mov|mkv|avi|ts|flv)$/.test(pathname);
-    } catch(e) { return false; }
+    try { const p = new URL(url).pathname.toLowerCase(); return /\.(mp4|m3u8|webm|ogg|mov|mkv|avi|ts|flv)(\?|#|$)/.test(p) || /\.(mp4|m3u8|webm|ogg|mov|mkv|avi|ts|flv)$/.test(p); }
+    catch(e) { return false; }
   }
-  function isSocialPlatformUrl(url) {
-    const platforms = [
-      /channels\.weixin\.qq\.com/i, /finder\.video\.qq\.com/i, /weixin\.qq\.com/i,
-      /douyin\.com/i, /kuaishou\.com/i, /xiaohongshu\.com/i, /xhslink\.com/i,
-      /weibo\.com/i, /weibo\.cn/i, /zhihu\.com/i, /ixigua\.com/i,
-      /haokan\.baidu\.com/i, /v\.qq\.com/i, /iqiyi\.com/i, /youku\.com/i, /mgtv\.com/i,
-    ];
-    return platforms.some(p => p.test(url));
-  }
-  function isWeChatVideoUrl(url) {
-    return /channels\.weixin\.qq\.com|finder\.video\.qq\.com|weixin\.qq\.com/i.test(url);
-  }
+  function isWeChatVideoUrl(url) { return /channels\.weixin\.qq\.com|finder\.video\.qq\.com|weixin\.qq\.com/i.test(url); }
   function getPlatformName(url) {
     if (isWeChatVideoUrl(url)) return '微信视频号';
     if (/douyin\.com/i.test(url)) return '抖音';
@@ -1177,36 +1466,35 @@ html, body {
     if (isBilibiliUrl(v.source)) return 'B站视频';
     if (isYouTubeUrl(v.source)) return 'YouTube';
     if (isDirectVideoUrl(v.source)) return '在线视频';
-    return `${getPlatformName(v.source)}视频`;
+    return getPlatformName(v.source) + '视频';
   }
 
-  // ============================
-  //  Admin Mode: Render
-  // ============================
+  // ================================================================
+  //  ADMIN MODE: RENDER
+  // ================================================================
   function renderAdminList(videos) {
     const sorted = (videos || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+    const listEl = $('adminVideoList');
+    const hintEl = $('emptyAdminHint');
 
     if (sorted.length === 0) {
-      emptyAdminHint.style.display = 'block';
-      adminVideoList.innerHTML = '';
+      if (hintEl) hintEl.style.display = 'block';
+      listEl.innerHTML = '';
     } else {
-      emptyAdminHint.style.display = 'none';
-      adminVideoList.innerHTML = sorted.map((v, i) => `
+      if (hintEl) hintEl.style.display = 'none';
+      listEl.innerHTML = sorted.map((v) => `
         <div class="admin-video-item" data-video-id="${v.id}" draggable="true">
           <span class="drag-handle">☰</span>
-          <span style="font-size:24px;flex-shrink:0">${v.type === 'local' ? '📁' : '🔗'}</span>
+          <span class="item-icon">${v.type === 'local' ? '📁' : '🔗'}</span>
           <div class="item-info">
             <div class="item-title">${escapeHtml(v.title)}</div>
-            <div class="item-type">
-              ${getAdminItemTypeLabel(v)}
-              <span class="item-blob-warning" style="color:#e09b3c;font-size:0.8rem;display:none;margin-left:4px">⚠️ 需重新上传</span>
-            </div>
+            <div class="item-meta">${getAdminItemMeta(v)}</div>
           </div>
           <button class="item-delete" data-delete-id="${v.id}" title="删除">🗑️</button>
         </div>
       `).join('');
 
-      adminVideoList.querySelectorAll('.item-delete').forEach(btn => {
+      listEl.querySelectorAll('.item-delete').forEach(btn => {
         btn.addEventListener('click', (e) => { e.stopPropagation(); deleteVideo(btn.dataset.deleteId); });
       });
       bindDragEvents();
@@ -1214,12 +1502,9 @@ html, body {
     }
   }
 
-  function getAdminItemTypeLabel(v) {
-    if (v.type === 'local') {
-      if (v.fileName) return `本地视频 · ${v.fileName}`;
-      return '本地视频';
-    }
-    if (v.source) return `在线链接 · ${getVideoTypeLabel(v)}`;
+  function getAdminItemMeta(v) {
+    if (v.type === 'local') { return (v.fileName ? '本地视频 · ' + v.fileName : '本地视频'); }
+    if (v.source) return '在线链接 · ' + getVideoTypeLabel(v);
     return '在线链接';
   }
 
@@ -1229,10 +1514,10 @@ html, body {
       try {
         const blob = await idbGet(v.localId);
         if (!blob) {
-          const item = adminVideoList.querySelector(`[data-video-id="${v.id}"]`);
+          const item = $('adminVideoList').querySelector('[data-video-id="' + v.id + '"]');
           if (item) {
-            const warning = item.querySelector('.item-blob-warning');
-            if (warning) warning.style.display = 'inline';
+            const meta = item.querySelector('.item-meta');
+            if (meta) meta.innerHTML += ' <span style="color:#e09b3c">⚠️ 需重新上传</span>';
           }
         }
       } catch(e) {}
@@ -1240,19 +1525,18 @@ html, body {
   }
 
   function bindDragEvents() {
-    const items = adminVideoList.querySelectorAll('.admin-video-item');
+    const items = $('adminVideoList').querySelectorAll('.admin-video-item');
     let draggedItem = null;
     items.forEach(item => {
       item.addEventListener('dragstart', (e) => {
         draggedItem = item;
-        item.style.opacity = '0.5';
+        item.style.opacity = '0.4';
         e.dataTransfer.effectAllowed = 'move';
       });
-      item.addEventListener('dragend', (e) => {
+      item.addEventListener('dragend', () => {
         item.style.opacity = '1';
         draggedItem = null;
-        const currentItems = adminVideoList.querySelectorAll('.admin-video-item');
-        currentItems.forEach((el, idx) => {
+        $('adminVideoList').querySelectorAll('.admin-video-item').forEach((el, idx) => {
           const vid = el.dataset.videoId;
           const video = meta.videos.find(v => v.id === vid);
           if (video) video.order = idx;
@@ -1264,295 +1548,206 @@ html, body {
         if (draggedItem && draggedItem !== item) {
           const rect = item.getBoundingClientRect();
           const midY = rect.top + rect.height / 2;
-          if (e.clientY < midY) {
-            item.parentNode.insertBefore(draggedItem, item);
-          } else {
-            item.parentNode.insertBefore(draggedItem, item.nextSibling);
-          }
+          if (e.clientY < midY) item.parentNode.insertBefore(draggedItem, item);
+          else item.parentNode.insertBefore(draggedItem, item.nextSibling);
         }
       });
       item.addEventListener('drop', (e) => { e.preventDefault(); });
     });
   }
 
-  // ============================
-  //  Admin Mode: CRUD
-  // ============================
+  // ================================================================
+  //  ADMIN CRUD
+  // ================================================================
   async function deleteVideo(vid) {
     const video = meta.videos.find(v => v.id === vid);
     if (!video) return;
-    if (!confirm(`确定要删除「${video.title}」吗？\n删除后无法恢复。`)) return;
-
-    if (video.type === 'local' && video.localId) {
-      try { await idbDelete(video.localId); } catch(e) {}
-    }
-
+    if (!confirm('确定要删除「' + video.title + '」吗？\n删除后无法恢复。')) return;
+    if (video.type === 'local' && video.localId) { try { await idbDelete(video.localId); } catch(e) {} }
     meta.videos = meta.videos.filter(v => v.id !== vid);
-
-    // Sync to Supabase
     try {
-      showSyncIndicator('syncing');
+      showSyncStatus('syncing');
       await deleteVideoFromSupabase(vid);
-      showSyncIndicator('已同步');
-    } catch(e) {
-      showToast('⚠️ 云端同步失败，请检查网络');
-    }
-
+      showSyncStatus('已同步');
+    } catch(e) { showToast('⚠️ 云端同步失败，请检查网络'); }
     renderAdminList(meta.videos);
     showToast('✅ 已删除');
   }
 
-  addLinkBtn.addEventListener('click', async () => {
-    const title = linkTitleInput.value.trim();
-    const url = linkUrlInput.value.trim();
+  $('addLinkBtn').addEventListener('click', async () => {
+    const title = $('linkTitle').value.trim();
+    const url = $('linkUrl').value.trim();
     if (!title) { showToast('请填写视频名称'); return; }
     if (!url) { showToast('请填写视频地址'); return; }
     try { new URL(url); } catch(e) { showToast('请输入有效的网址'); return; }
 
-    const video = {
-      id: generateId(),
-      title: title,
-      type: 'link',
-      source: url,
-      order: meta.videos.length
-    };
-
+    const video = { id: generateId(), title, type: 'link', source: url, order: meta.videos.length };
     meta.videos.push(video);
-
     try {
-      showSyncIndicator('syncing');
+      showSyncStatus('syncing');
       await saveVideoToSupabase(video);
-      showSyncIndicator('已同步');
-    } catch(e) {
-      showToast('⚠️ 云端同步失败，视频仅在本地保存');
-    }
-
-    linkTitleInput.value = '';
-    linkUrlInput.value = '';
+      showSyncStatus('已同步');
+    } catch(e) { showToast('⚠️ 云端同步失败，视频仅在本地保存'); }
+    $('linkTitle').value = '';
+    $('linkUrl').value = '';
     renderAdminList(meta.videos);
     showToast('✅ 视频链接已添加！');
   });
 
-  uploadBtn.addEventListener('click', () => { fileInput.click(); });
+  $('uploadBtn').addEventListener('click', () => { $('fileInput').click(); });
 
-  fileInput.addEventListener('change', async (e) => {
+  $('fileInput').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const title = uploadTitleInput.value.trim() || file.name.replace(/\.[^.]+$/, '');
+    const title = $('uploadTitle').value.trim() || file.name.replace(/\.[^.]+$/, '');
+    const progWrap = $('progressWrapper');
+    const progFill = $('progressFill');
 
-    progressWrapper.style.display = 'block';
-    progressFill.style.width = '0%';
+    progWrap.style.display = 'block';
+    progFill.style.width = '0%';
 
     try {
-      progressFill.style.width = '30%';
+      progFill.style.width = '30%';
       await sleep(200);
-      const blob = await readFileAsBlob(file);
-      progressFill.style.width = '70%';
+      const blob = new Blob([file], { type: file.type });
+      progFill.style.width = '70%';
       const localId = generateId();
       await idbPut(localId, blob);
-      progressFill.style.width = '100%';
+      progFill.style.width = '100%';
 
-      const video = {
-        id: generateId(),
-        title: title,
-        type: 'local',
-        localId: localId,
-        fileName: file.name,
-        fileSize: file.size,
-        order: meta.videos.length
-      };
-
+      const video = { id: generateId(), title, type: 'local', localId, fileName: file.name, fileSize: file.size, order: meta.videos.length };
       meta.videos.push(video);
 
-      // Sync metadata to Supabase (blob stays local)
       try {
-        showSyncIndicator('syncing');
+        showSyncStatus('syncing');
         await saveVideoToSupabase(video);
-        showSyncIndicator('已同步');
-      } catch(err) {
-        showToast('⚠️ 视频元数据同步失败，仅本地保存');
-      }
+        showSyncStatus('已同步');
+      } catch(err) { showToast('⚠️ 视频元数据同步失败，仅本地保存'); }
 
       await sleep(300);
-      progressWrapper.style.display = 'none';
-      progressFill.style.width = '0%';
-      uploadTitleInput.value = '';
-      fileInput.value = '';
+      progWrap.style.display = 'none';
+      progFill.style.width = '0%';
+      $('uploadTitle').value = '';
+      $('fileInput').value = '';
       renderAdminList(meta.videos);
       showToast('✅ 视频上传成功！');
     } catch(err) {
-      progressWrapper.style.display = 'none';
-      progressFill.style.width = '0%';
+      progWrap.style.display = 'none';
+      progFill.style.width = '0%';
       showToast('❌ 上传失败，请重试');
     }
   });
 
-  function readFileAsBlob(file) {
-    return new Promise((resolve, reject) => {
-      try { resolve(new Blob([file], { type: file.type })); }
-      catch(e) { reject(e); }
-    });
-  }
-
   function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+  function generateId() { return 'v_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8); }
 
-  function generateId() {
-    return 'v_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
-  }
-
-  // Done button (was Save & Exit)
-  adminDoneBtn.addEventListener('click', async () => {
-    // Sync all videos order to Supabase
+  $('adminDoneBtn').addEventListener('click', async () => {
     try {
-      showSyncIndicator('syncing');
+      showSyncStatus('syncing');
       await saveAllVideosToSupabase(meta.videos);
-      showSyncIndicator('已同步');
-    } catch(e) {
-      showToast('⚠️ 同步失败，请检查网络');
-    }
+      showSyncStatus('已同步');
+    } catch(e) { showToast('⚠️ 同步失败，请检查网络'); }
     switchToElderly();
     showToast('✅ 已保存！');
   });
 
-  adminLogoutBtn.addEventListener('click', doLogout);
+  $('adminLogoutBtn').addEventListener('click', doLogout);
 
-  // ============================
-  //  Login Event Handlers
-  // ============================
-  loginBtn.addEventListener('click', doLogin);
+  // ================================================================
+  //  LOGIN EVENT HANDLERS
+  // ================================================================
+  $('loginBtn').addEventListener('click', doLogin);
+  $('loginPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') doLogin(); });
+  $('loginEmail').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('loginPassword').focus(); });
 
-  loginPassword.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') doLogin();
-  });
-  loginEmail.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') loginPassword.focus();
-  });
-
-  showSignupLink.addEventListener('click', () => {
+  $('showSignupLink').addEventListener('click', () => {
     signupMode = !signupMode;
-    if (signupMode) {
-      showSignupLink.textContent = '已有账号？返回登录';
-      loginBtn.textContent = '✨ 创建账号';
-      loginError.textContent = '';
-    } else {
-      showSignupLink.textContent = '首次使用？创建账号';
-      loginBtn.textContent = '🔐 登录';
-    }
-    loginEmail.focus();
+    const link = $('showSignupLink');
+    const btn = $('loginBtn');
+    if (signupMode) { link.textContent = '已有账号？返回登录'; btn.textContent = '✨ 创建账号'; }
+    else { link.textContent = '首次使用？创建账号'; btn.textContent = '🔐 登录'; }
+    $('loginError').textContent = '';
+    $('loginEmail').focus();
   });
 
-  skipLoginLink.addEventListener('click', () => {
+  $('skipLoginLink').addEventListener('click', () => {
     currentUser = null;
     meta.videos = [];
     switchToElderly();
     showToast('⚠️ 离线模式，视频不会同步');
   });
 
-  // ============================
-  //  Admin Entry: 5-click on title
-  // ============================
-  elderlyTitle.addEventListener('click', () => {
+  // ================================================================
+  //  ADMIN ENTRY: 5-click on elderly title
+  // ================================================================
+  $('elderlyTitle').addEventListener('click', () => {
     titleClickCount++;
-    if (titleClickCount === 1) {
-      titleClickTimer = setTimeout(() => { titleClickCount = 0; }, TITLE_CLICK_WINDOW);
-    }
+    if (titleClickCount === 1) { titleClickTimer = setTimeout(() => { titleClickCount = 0; }, TITLE_CLICK_WINDOW); }
     if (titleClickCount >= TITLE_CLICK_THRESHOLD) {
       titleClickCount = 0;
       if (titleClickTimer) clearTimeout(titleClickTimer);
-      if (!currentUser) {
-        showToast('请先登录再管理视频');
-      } else {
-        switchToAdmin();
-      }
+      if (!currentUser) { showToast('请先登录再管理视频'); }
+      else { switchToAdmin(); }
     }
   });
 
-  // ============================
-  //  Player Events
-  // ============================
-  playerBackBtn.addEventListener('click', closePlayer);
-  playerPlayPauseBtn.addEventListener('click', togglePlayPause);
+  // ================================================================
+  //  PLAYER EVENTS
+  // ================================================================
+  $('playerBackBtn').addEventListener('click', closePlayer);
+  $('playerPlayPauseBtn').addEventListener('click', togglePlayPause);
 
-  // ============================
-  //  Keyboard Shortcuts
-  // ============================
+  // Keyboard shortcuts
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && playerContainer.classList.contains('active')) {
-      closePlayer();
-    }
-    if (e.key === ' ' && playerContainer.classList.contains('active')) {
-      e.preventDefault();
-      togglePlayPause();
-    }
+    if (e.key === 'Escape' && $('playerContainer').classList.contains('active')) { closePlayer(); }
+    if (e.key === ' ' && $('playerContainer').classList.contains('active')) { e.preventDefault(); togglePlayPause(); }
   });
 
-  // ============================
-  //  Cleanup
-  // ============================
+  // Cleanup on unload
   window.addEventListener('beforeunload', () => {
-    if (playerVideoEl && playerVideoEl.src.startsWith('blob:')) {
-      URL.revokeObjectURL(playerVideoEl.src);
-    }
+    if (playerVideoEl && playerVideoEl.src.startsWith('blob:')) URL.revokeObjectURL(playerVideoEl.src);
   });
 
+  // Pause when tab hidden
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden && playerVideoEl && isPlaying) {
-      playerVideoEl.pause();
-    }
+    if (document.hidden && playerVideoEl && isPlaying) playerVideoEl.pause();
   });
 
-  // ============================
-  //  Init
-  // ============================
+  // ================================================================
+  //  INIT — check existing session & boot
+  // ================================================================
   async function init() {
-    // Check for existing session
     const { data: { session } } = await supabase.auth.getSession();
-
     if (session && session.user) {
       currentUser = session.user;
-      loginView.classList.remove('active');
-      skipLoginLink.style.display = 'none';
-
-      try {
-        meta.videos = await loadVideosFromSupabase();
-      } catch(e) {
-        console.warn('Failed to load videos:', e);
-        meta.videos = [];
-      }
-
+      $('loginView').classList.remove('active');
+      $('skipLoginLink').style.display = 'none';
+      try { meta.videos = await loadVideosFromSupabase(); }
+      catch(e) { console.warn('Failed to load videos:', e); meta.videos = []; }
       subscribeToChanges();
       switchToElderly();
     } else {
-      // Show login view
-      loginView.classList.add('active');
-      skipLoginLink.style.display = 'inline-block';
+      $('loginView').classList.add('active');
+      $('skipLoginLink').style.display = 'inline-block';
     }
 
-    // Listen for auth state changes
     supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') {
-        currentUser = null;
-        meta.videos = [];
-        unsubscribeFromChanges();
+        currentUser = null; meta.videos = []; unsubscribeFromChanges();
         if (currentMode !== 'login') switchToLogin();
       } else if (event === 'SIGNED_IN' && session) {
         currentUser = session.user;
-        // Reload videos
-        loadVideosFromSupabase().then(v => {
-          meta.videos = v;
-          renderElderlyList(v);
-        }).catch(() => {});
+        loadVideosFromSupabase().then(v => { meta.videos = v; renderElderlyList(v); }).catch(() => {});
         subscribeToChanges();
       }
     });
   }
 
   init();
-
-  console.log('👵💃 外婆健身操已就绪！');
-  console.log('  登录：Supabase Auth (邮箱+密码)');
-  console.log('  同步：实时数据库同步');
-  console.log('  存储：Supabase + IndexedDB (本地视频)');
+  console.log('👵💃 外婆健身操 v2 已启动！');
+  console.log('  ✨ 设计升级：手绘蜡笔风 + 龙藏体 + 纸张纹理');
+  console.log('  🔐 登录：Supabase Auth');
+  console.log('  ☁️ 同步：实时数据库同步');
 })();
 </script>
 </body>
